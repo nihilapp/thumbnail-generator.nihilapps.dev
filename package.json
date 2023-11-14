@@ -1,0 +1,69 @@
+{
+  "name": "nihil-next-app-template",
+  "version": "1.0.0",
+  "description": "Nextjs 편하게 쓰려고 만든 템플릿. 타입스크립트 기본 지원.",
+  "main": "index.js",
+  "proxy": "http://localhost:4000",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nihil-template/nihil-next-app-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nihil-template/nihil-next-app-template/issues"
+  },
+  "homepage": "https://github.com/nihil-template/nihil-next-app-template#readme",
+  "scripts": {
+    "remove": "rm -rf node_modules/.cache && rm -rf build/",
+    "serve": "yarn run remove && next dev",
+    "start": "yarn run remove && next build && next start",
+    "build": "yarn run remove && next build",
+    "backupgit": "mv ../io/.git ../backup",
+    "restoregit": "mv ../backup/.git ../io",
+    "export": "yarn run backupgit && yarn run remove && next build && next export -o ../io/ && touch ../io/.nojekyll && yarn run restoregit && cd ../io && git add .",
+    "clean": "yarn cache clean"
+  },
+  "keywords": [],
+  "author": "NIHILncunia",
+  "license": "MIT",
+  "dependencies": {
+    "@iconify/react": "^4.1.1",
+    "@reduxjs/toolkit": "^1.9.7",
+    "@supabase/ssr": "^0.0.10",
+    "@supabase/supabase-js": "^2.38.4",
+    "axios": "^1.6.1",
+    "dayjs": "^1.11.10",
+    "next": "^14.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "react-redux": "^8.1.3",
+    "react-toastify": "^9.1.3",
+    "redux": "^4.2.1",
+    "redux-persist": "^6.0.0",
+    "tailwind-merge": "^2.0.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.3",
+    "@svgr/webpack": "^8.1.0",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/node": "^20.9.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.53.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-next": "^14.0.2",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import createClient from '@/src/utils/supabase/client';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 
 interface Props {
@@ -9,6 +10,17 @@ interface Props {
 
 export function WordChange({ styles, }: Props) {
   const [ word, setWord, ] = useState('JavaScript');
+  const [ supabase, ] = useState(() => createClient());
+
+  useEffect(() => {
+    const getSession = async () => {
+      const { data, } = await supabase.auth.getSession();
+
+      console.log('로그인 여부 >> ', data);
+    };
+
+    getSession();
+  }, []);
 
   const onClickWord = useCallback(
     () => {

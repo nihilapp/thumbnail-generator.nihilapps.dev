@@ -18,6 +18,7 @@ export function Nav({ styles, }: Props) {
     <>
       <nav className={style.default}>
         <Link href='/'>홈</Link>
+        <Link href='/test'>테스트</Link>
         <Link href='/example'>예시</Link>
       </nav>
     </>

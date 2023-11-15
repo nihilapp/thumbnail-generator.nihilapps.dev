@@ -1,47 +1,69 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import createClient from '@/src/utils/supabase/client';
+import { api } from '@/src/utils/axios';
 
 interface Props {
   styles?: ClassNameValue;
 }
 
 export function SupaBaseTest({ styles, }: Props) {
-  const test = async () => {
-    const supabase = await createClient();
+  const [ supabase, ] = useState(() => createClient());
 
-    await supabase.auth.signUp({
-      email: 'nihil_ncunia@naver.com',
-      password: '123456789!',
-    }).then((response) => {
-      const { data, } = response;
-      console.log('data >> ', data);
-    });
-  };
+  const signUp = useCallback(
+    () => {
+      supabase.auth.signUp({
+        email: 'nihil_ncunia@naver.com',
+        password: '123456789!',
+      });
+    },
+    []
+  );
 
   const getSession = useCallback(
     async () => {
-      const supabase = await createClient();
+      const { data, } = await api.get(`${window.location.origin}/api`);
 
-      const session = await supabase.auth.getSession();
-
-      console.log(session);
+      console.log(data);
     },
     []
   );
 
   const login = useCallback(
-    async () => {
-      const supabase = await createClient();
-
-      const { data, } = await supabase.auth.signInWithPassword({
+    () => {
+      supabase.auth.signInWithPassword({
         email: 'nihil_ncunia@naver.com',
         password: '123456789!',
       });
+    },
+    []
+  );
 
-      console.log('data >> ', data);
+  const githubLogin = useCallback(
+    () => {
+      supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: 'http://localhost:3000/',
+        },
+      }).then((response) => {
+        console.log(response);
+
+        console.log('깃허브 로그인 완료');
+      });
+    },
+    []
+  );
+
+  const signOut = useCallback(
+    () => {
+      supabase.auth.signOut().then((response) => {
+        console.log(response);
+
+        console.log('로그아웃 완료');
+      });
     },
     []
   );
@@ -55,9 +77,12 @@ export function SupaBaseTest({ styles, }: Props) {
 
   return (
     <>
-      <button onClick={test}>회원가입</button>
-      <button onClick={getSession}>로그인 여부</button>
-      <button onClick={login}>로그인</button>
+      <button onClick={signUp}>회원가입</button><br />
+      <button onClick={getSession}>로그인 여부</button><br />
+      <button onClick={login}>로그인</button><br />
+
+      <button onClick={githubLogin}>깃허브 로그인</button>
+      <button onClick={signOut}>로그아웃</button>
     </>
   );
 }

@@ -13,6 +13,7 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'eslint:recommended',
+    'next',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
   ],

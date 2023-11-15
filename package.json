@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
+    "@next/eslint-plugin-next": "^14.0.2",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20.9.0",

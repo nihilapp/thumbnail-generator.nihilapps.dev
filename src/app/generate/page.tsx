@@ -1,17 +1,16 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { setMeta } from '@/src/hooks/setMeta';
-import { SupaBaseTest } from '@/src/components/Content/Test/SupaBaseTest';
 
 export const metadata: Metadata = setMeta({
-  title: '테스트',
-  url: '/test',
+  title: '생성',
+  url: '/generate',
 });
 
-export default function TestPage() {
+export default function GeneratePage() {
   return (
     <>
-      <SupaBaseTest />
+      <div>content</div>
     </>
   );
 }

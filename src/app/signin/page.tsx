@@ -1,17 +1,17 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { GetBoards } from '@/src/components/Content/Example';
 import { setMeta } from '@/src/hooks/setMeta';
+import { SignInForm } from '@/src/components/Content/signin';
 
 export const metadata: Metadata = setMeta({
-  title: '예시',
-  url: '/example',
+  title: '로그인',
+  url: '/signin',
 });
 
-export default function ExamplePage() {
+export default function SignInPage() {
   return (
     <>
-      <GetBoards />
+      <SignInForm />
     </>
   );
 }

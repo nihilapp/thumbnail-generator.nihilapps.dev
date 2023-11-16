@@ -13,6 +13,7 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import exampleReducer from '@/src/reducers/example.reducer';
 import { exampleApi } from '../apis/example.api';
+import authReducer from '../reducers/auth.reducer';
 
 const createNoopStorage = () => {
   return {
@@ -37,12 +38,13 @@ const storage = typeof window === 'undefined'
 const reducers = combineReducers({
   [exampleApi.reducerPath]: exampleApi.reducer,
   example: exampleReducer,
+  auth: authReducer,
 });
 
 const persistedReducer = persistReducer({
   key: 'root',
   storage,
-  whitelist: [],
+  whitelist: [ 'auth', ],
   blacklist: [ 'example', exampleApi.reducerPath, ],
 }, reducers);
 

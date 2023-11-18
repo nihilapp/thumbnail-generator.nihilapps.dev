@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { setMeta } from '@/src/hooks/setMeta';
+import { BackgroundConfig, TextConfig, Thumbnail } from '@/src/components/Content/generate';
 
 export const metadata: Metadata = setMeta({
   title: '생성',
@@ -10,7 +11,9 @@ export const metadata: Metadata = setMeta({
 export default function GeneratePage() {
   return (
     <>
-      <div>content</div>
+      <Thumbnail />
+      <TextConfig />
+      <BackgroundConfig />
     </>
   );
 }

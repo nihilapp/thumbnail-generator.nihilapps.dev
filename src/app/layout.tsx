@@ -1,9 +1,11 @@
 import React from 'react';
 import { Metadata } from 'next';
-import '@/src/styles/tailwind.css';
 import { Providers } from '../layouts/Providers';
 import { configData } from '../data';
 import { Footer, Header, Main } from '../components/Layout';
+
+import '@/src/styles/tailwind.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(configData.url),

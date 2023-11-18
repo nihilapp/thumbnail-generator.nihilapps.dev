@@ -1,6 +1,8 @@
 import React from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
+import { configData } from '@/src/data';
 import { Nav } from './Nav';
+import { UserNav } from './UserNav';
 
 interface Props {
   styles?: ClassNameValue;
@@ -17,7 +19,12 @@ export function Header({ styles, }: Props) {
   return (
     <>
       <header className={style.default}>
-        <Nav />
+        <h1>{configData.title}</h1>
+
+        <div>
+          <Nav />
+          <UserNav />
+        </div>
       </header>
     </>
   );

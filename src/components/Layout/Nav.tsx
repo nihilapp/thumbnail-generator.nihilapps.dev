@@ -1,21 +1,17 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setUser } from '@/src/reducers/auth.reducer';
-import { toast } from 'react-toastify';
+import { useAppDispatch } from '@/src/hooks/rtk';
+import { setUser } from '@/src/reducers';
 
 interface Props {
   styles?: ClassNameValue
 }
 
 export function Nav({ styles, }: Props) {
-  const user = useAppSelector(
-    (state) => state.auth.user
-  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -39,16 +35,6 @@ export function Nav({ styles, }: Props) {
     };
   }, []);
 
-  const onClickSignOut = useCallback(
-    () => {
-      supabase.auth.signOut()
-        .then(() => {
-          toast.success('로그아웃 되었습니다.');
-        });
-    },
-    []
-  );
-
   const style = {
     default: twJoin([
       ``,
@@ -61,17 +47,7 @@ export function Nav({ styles, }: Props) {
       <nav className={style.default}>
         <Link href='/'>홈</Link>
         <Link href='/generate'>생성</Link>
-        {user ? (
-          <>
-            <Link href='/mypage'>마이페이지</Link>
-            <button onClick={onClickSignOut}>로그아웃</button>
-          </>
-        ) : (
-          <>
-            <Link href='/signup'>회원가입</Link>
-            <Link href='/signin'>로그인</Link>
-          </>
-        )}
+        <Link href='/test'>테스트</Link>
       </nav>
     </>
   );

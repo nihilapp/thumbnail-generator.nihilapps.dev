@@ -9,7 +9,7 @@ interface Props {
 export function Main({ styles, children, }: Props) {
   const style = {
     default: twJoin([
-      ``,
+      `w-[1280px] mx-auto`,
       styles,
     ]),
   };

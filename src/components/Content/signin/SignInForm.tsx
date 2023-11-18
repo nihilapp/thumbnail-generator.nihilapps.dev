@@ -35,6 +35,18 @@ export function SignInForm({ styles, }: Props) {
     []
   );
 
+  const onClickSignInWithGithub = useCallback(
+    () => {
+      supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: '/',
+        },
+      });
+    },
+    []
+  );
+
   const style = {
     default: twJoin([
       `space-y-2`,
@@ -99,6 +111,8 @@ export function SignInForm({ styles, }: Props) {
         )}
         <button>로그인</button>
       </form>
+
+      <button onClick={onClickSignInWithGithub}>깃허브로 로그인</button>
 
       {process.env.NODE_ENV === 'development' && (
         <DevTool control={control} placement='top-right' />

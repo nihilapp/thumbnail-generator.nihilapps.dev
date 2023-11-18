@@ -34,9 +34,8 @@ export function SignInForm({ styles, }: Props) {
             return;
           }
 
-          toast.success('로그인 성공.');
-
           router.push('/');
+          toast.success('로그인 성공.');
         });
     },
     []

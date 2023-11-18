@@ -14,7 +14,7 @@
   "homepage": "https://github.com/nihil-template/nihil-next-app-template#readme",
   "scripts": {
     "remove": "rm -rf node_modules/.cache && rm -rf build/",
-    "serve": "yarn run remove && next dev",
+    "serve": "yarn run remove && next dev -p 3100",
     "start": "yarn run remove && next build && next start",
     "build": "yarn run remove && next build",
     "backupgit": "mv ../io/.git ../backup",

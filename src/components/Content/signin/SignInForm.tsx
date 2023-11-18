@@ -6,6 +6,8 @@ import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { DevTool } from '@hookform/devtools';
 import { supabase } from '@/src/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { AuthButton } from '../../Common';
 
 interface Props {
   styles?: ClassNameValue;
@@ -27,22 +29,15 @@ export function SignInForm({ styles, }: Props) {
     (data) => {
       supabase.auth.signInWithPassword(data)
         .then((response) => {
-          console.log(response);
+          if (response.error) {
+            toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
+            return;
+          }
+
+          toast.success('로그인 성공.');
 
           router.push('/');
         });
-    },
-    []
-  );
-
-  const onClickSignInWithGithub = useCallback(
-    () => {
-      supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-          redirectTo: '/',
-        },
-      });
     },
     []
   );
@@ -83,10 +78,11 @@ export function SignInForm({ styles, }: Props) {
               },
             })}
           />
+          {errors.email && (
+            <span>{errors.email?.message}</span>
+          )}
         </label>
-        {errors.email && (
-          <span>{errors.email?.message}</span>
-        )}
+
         <label htmlFor='password' className={style.inputBlock}>
           <span className={style.label}>비밀번호</span>
           <input
@@ -105,14 +101,16 @@ export function SignInForm({ styles, }: Props) {
               },
             })}
           />
+          {errors.password && (
+            <span>{errors.password?.message}</span>
+          )}
         </label>
-        {errors.password && (
-          <span>{errors.password?.message}</span>
-        )}
         <button>로그인</button>
       </form>
 
-      <button onClick={onClickSignInWithGithub}>깃허브로 로그인</button>
+      <div className='border-t border-black-300'>
+        <AuthButton />
+      </div>
 
       {process.env.NODE_ENV === 'development' && (
         <DevTool control={control} placement='top-right' />

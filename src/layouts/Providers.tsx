@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '@/src/store';
 import { ToastContainer } from 'react-toastify';
-import { StyledComponentsRegistry } from '../components/Common';
 
 interface Props {
   children: React.ReactNode;
@@ -15,9 +14,7 @@ export function Providers({ children, }: Props) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <StyledComponentsRegistry>
-          {children}
-        </StyledComponentsRegistry>
+        {children}
         <ToastContainer
           position='bottom-right'
           autoClose={5000}

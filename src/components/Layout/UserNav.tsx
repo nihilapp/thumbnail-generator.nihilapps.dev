@@ -26,6 +26,8 @@ export function UserNav({ styles, }: Props) {
     []
   );
 
+  console.log('user >> ', user);
+
   const style = {
     default: twJoin([
       ``,

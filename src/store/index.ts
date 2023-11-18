@@ -44,7 +44,7 @@ const reducers = combineReducers({
 const persistedReducer = persistReducer({
   key: 'root',
   storage,
-  whitelist: [ 'auth', ],
+  whitelist: [ 'auth', 'thumbnail', ],
   blacklist: [ 'example', exampleApi.reducerPath, ],
 }, reducers);
 

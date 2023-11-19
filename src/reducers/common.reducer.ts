@@ -3,11 +3,13 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 interface InitialState {
   message: string;
   messageShown: boolean;
+  isSettingSaved: boolean;
 }
 
 const initialState: InitialState = {
   message: '',
   messageShown: false,
+  isSettingSaved: false,
 };
 
 const commonReducer = createSlice({
@@ -26,8 +28,14 @@ const commonReducer = createSlice({
     ) {
       state.messageShown = payload;
     },
+    setIsSettingSaved(
+      state,
+      { payload, }: PayloadAction<boolean>
+    ) {
+      state.isSettingSaved = payload;
+    },
   },
 });
 
-export const { setMessage, setMessageShown, } = commonReducer.actions;
+export const { setMessage, setMessageShown, setIsSettingSaved, } = commonReducer.actions;
 export default commonReducer.reducer;

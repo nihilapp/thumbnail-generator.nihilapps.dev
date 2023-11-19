@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { initState } from '@/src/reducers';
+import { initState, setIsSettingSaved } from '@/src/reducers';
 import React, {
   useCallback, useEffect, useRef, useState
 } from 'react';
@@ -13,12 +13,15 @@ import Image from 'next/image';
 import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
+import { IDriveFolder } from '@/src/types/common.types';
 
 export function Thumbnail() {
+  const [ randomId, ] = useState(() => Nihil.uuid(0));
   const [ isClick, setIsClick, ] = useState(false);
   const [ isLoading, setIsLoading, ] = useState(false);
   const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
+  const [ driveFolder, setDriveFolder, ] = useState<IDriveFolder>(null);
 
   const thRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -30,13 +33,21 @@ export function Thumbnail() {
     (state) => state.thumbnail
   );
 
-  const { user, } = useAppSelector(
+  const { user, session, } = useAppSelector(
     (state) => state.auth
   );
 
+  const { isSettingSaved, } = useAppSelector(
+    (state) => state.common
+  );
+
   useEffect(() => {
-    dispatch(initState());
-  }, []);
+    onClickReset();
+
+    return () => {
+      onClickReset();
+    };
+  }, [ randomId, ]);
 
   useEffect(() => {
     if (isLoading) {
@@ -49,21 +60,25 @@ export function Thumbnail() {
         setImageSrc(canvas.toDataURL('image/png'));
       }).then(() => {
         setIsLoading(false);
-        console.log('이미지 생성이 완료되었습니다.');
+        toast.success('썸네일 이미지가 생성되었습니다.');
       });
     }
-  }, [ isLoading, ]);
+  }, [ isLoading, thRef, bgColor, ]);
 
   const onClickReset = useCallback(
     () => {
       dispatch(initState());
+      setIsClick(false);
+      setIsLoading(false);
+      setIsSave(false);
+      setImageSrc(DefaultImage.src);
     },
-    []
+    [ DefaultImage, ]
   );
 
   const saveThumbnail = useCallback(
     async () => {
-      supabase.from('thumbnails').insert({
+      const response = await supabase.from('thumbnails').insert({
         title,
         sub_title: subTitle,
         user_id: user.id,
@@ -75,10 +90,14 @@ export function Thumbnail() {
         bg_blue: bgColor.blue,
         bg_image: imgSrc,
         bg_position: imageY,
-      }).then(() => {
-        toast.success('설정이 저장되었습니다.');
-        setIsSave(true);
       });
+
+      if (!response.error) {
+        toast.success('설정이 저장되었습니다.');
+        dispatch(setIsSettingSaved(true));
+      } else {
+        toast.error('설정이 저장되지 않았습니다.');
+      }
     },
     [ title, subTitle, textColor, bgColor, imgSrc, imageY, user, ]
   );
@@ -96,11 +115,20 @@ export function Thumbnail() {
       link.click();
 
       document.body.removeChild(link);
+
+      if (!user) {
+        console.log('로그인 안했을 경우');
+        dispatch(setIsSettingSaved(true));
+      } else {
+        setIsSave(true);
+      }
     },
-    [ imageSrc, title, ]
+    [ imageSrc, title, user, ]
   );
 
-  const onClickDownload = useCallback(
+  console.log(isSettingSaved);
+
+  const onClickGenerate = useCallback(
     () => {
       console.log('이미지 생성을 시작합니다.');
       setIsLoading(true);
@@ -110,16 +138,23 @@ export function Thumbnail() {
   );
 
   const onClickClose = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement | HTMLDivElement>) => {
+    (event: React.MouseEvent<HTMLButtonElement>) => {
       const target = event.target as HTMLElement;
 
-      if ((target.tagName === 'BUTTON' && target.id === 'close-button') || target.tagName === 'DIV') {
+      if (target.tagName === 'BUTTON' && target.id === 'close-button') {
         setIsClick(false);
         setImageSrc(DefaultImage.src);
         setIsSave(false);
       }
     },
     [ DefaultImage, ]
+  );
+
+  const onClickGoogleUpload = useCallback(
+    () => {
+      // TODO: 이 함수와 연결된 버튼을 클릭하면 GoogleDrivePicker 컴포넌트가 모달로 열리게끔 구성.
+    },
+    []
   );
 
   const style = {
@@ -146,7 +181,7 @@ export function Thumbnail() {
     ]),
     closeButton: twJoin([
       `block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]`,
-      isSave && 'disabled:bg-black-300 disabled:text-black-500 cursor-not-allowed',
+      !isSave && 'disabled:bg-black-300 disabled:text-black-500 cursor-not-allowed',
     ]),
     frame: {
       width: 'inherit',
@@ -172,8 +207,9 @@ export function Thumbnail() {
 
   return (
     <>
+      <button onClick={onClickGoogleUpload} className='mb-10 p-2 bg-blue-500 text-white'>구글 드라이브 픽커 테스트</button>
       {isClick && (
-        <div className={style.image} ref={imageRef} onClick={onClickClose}>
+        <div className={style.image} ref={imageRef}>
           <Image
             src={imageSrc}
             alt='다운로드 이미지'
@@ -183,13 +219,15 @@ export function Thumbnail() {
           />
 
           <div className='flex flex-row gap-2 w-[1280px]'>
-            <button
-              onClick={saveThumbnail}
-              disabled={isSave}
-              className={style.closeButton}
-            >
-              설정 저장
-            </button>
+            {user && (
+              <button
+                onClick={saveThumbnail}
+                disabled={!isSave}
+                className={style.closeButton}
+              >
+                설정 저장
+              </button>
+            )}
             <button
               onClick={getImageFile}
               className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
@@ -234,13 +272,13 @@ export function Thumbnail() {
       </div>
       {isLoading && (
         <div className={style.message}>
-          <Icon icon='mingcute:loading-fill' className='animate-spin text-[3rem] inline-block' /> 설정에 따라 40초 혹은 그 이상의 시간이 소요됩니다.
+          <Icon icon='mingcute:loading-fill' className='animate-spin text-[3rem] inline-block' /> 설정에 따라 40초 혹은 그 이상의 시간이 소요될 수 있습니다.
         </div>
       )}
 
       <div className={style.buttons}>
         <button onClick={onClickReset} className={style.button}>초기화</button>
-        <button onClick={onClickDownload} className={style.button}>
+        <button onClick={onClickGenerate} className={style.button}>
           {isLoading ? (
             <Icon icon='mingcute:loading-fill' className='animate-spin' />
           ) : (

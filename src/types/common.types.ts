@@ -25,3 +25,8 @@ export interface IMetaData {
   updated?: string;
   image?: string;
 }
+
+export interface IDriveFolder {
+  id: string;
+  name: string;
+}

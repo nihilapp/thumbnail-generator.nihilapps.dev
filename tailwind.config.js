@@ -196,6 +196,9 @@ module.exports = {
   plugins: [
     require('@tailwindcss/typography'),
     plugin(({ addVariant, }) => {
+      addVariant('input-slider', [ '&::-webkit-slider-thumb', ]);
+      addVariant('input-outer-spin', [ '&::-webkit-outer-spin-button', ]);
+      addVariant('input-inner-spin', [ '&::-webkit-inner-spin-button', ]);
       addVariant('first', [ '&:first-of-type', ]);
       addVariant('last', [ '&:last-of-type', ]);
       addVariant('not-first', [ '&:not(:first-of-type)', ]);

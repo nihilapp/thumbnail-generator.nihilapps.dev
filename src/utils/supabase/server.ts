@@ -1,9 +1,10 @@
+import { Database } from '@/src/types/supabase.types';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 const cookieStore = cookies();
 
-export const supabase = createServerClient(
+export const supabase = createServerClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_PROJECT!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   {

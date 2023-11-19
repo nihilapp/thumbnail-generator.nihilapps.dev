@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import { Providers } from '../layouts/Providers';
 import { configData } from '../data';
-import { Footer, Header, Main } from '../components/Layout';
+import { FooterBlock, HeaderBlock, MainBlock } from '../components/Layout';
 
 import '@/src/styles/tailwind.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,11 +42,11 @@ export default function AppLayout({ children, }: Props) {
     <html lang='ko'>
       <body>
         <Providers>
-          <Header />
-          <Main>
+          <HeaderBlock />
+          <MainBlock>
             {children}
-          </Main>
-          <Footer />
+          </MainBlock>
+          <FooterBlock />
         </Providers>
       </body>
     </html>

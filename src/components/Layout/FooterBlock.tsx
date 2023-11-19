@@ -5,7 +5,7 @@ interface Props {
   styles?: ClassNameValue;
 }
 
-export function Footer({ styles, }: Props) {
+export function FooterBlock({ styles, }: Props) {
   const style = {
     default: twJoin([
       ``,

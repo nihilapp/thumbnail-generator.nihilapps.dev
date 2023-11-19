@@ -14,6 +14,7 @@ import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { exampleApi } from '../apis/example.api';
 import authReducer from '../reducers/auth.reducer';
 import thumbnailReducer from '../reducers/thumbnail.reducer';
+import commonReducer from '../reducers/common.reducer';
 
 const createNoopStorage = () => {
   return {
@@ -39,13 +40,14 @@ const reducers = combineReducers({
   [exampleApi.reducerPath]: exampleApi.reducer,
   auth: authReducer,
   thumbnail: thumbnailReducer,
+  common: commonReducer,
 });
 
 const persistedReducer = persistReducer({
   key: 'root',
   storage,
   whitelist: [ 'auth', 'thumbnail', ],
-  blacklist: [ 'example', exampleApi.reducerPath, ],
+  blacklist: [ 'common', exampleApi.reducerPath, ],
 }, reducers);
 
 export const store = configureStore({

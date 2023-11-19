@@ -6,7 +6,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export function Main({ styles, children, }: Props) {
+export function MainBlock({ styles, children, }: Props) {
   const style = {
     default: twJoin([
       `w-[1284px] mx-auto`,

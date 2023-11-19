@@ -7,6 +7,8 @@ import { DevTool } from '@hookform/devtools';
 import { supabase } from '@/src/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { useAppDispatch } from '@/src/hooks/rtk';
+import { setMessage, setMessageShown } from '@/src/reducers';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -23,6 +25,7 @@ export function SignInForm({ styles, }: Props) {
     register, handleSubmit, control, formState: { errors, },
   } = useForm<Inputs>({ mode: 'all', });
 
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
@@ -31,11 +34,11 @@ export function SignInForm({ styles, }: Props) {
         .then((response) => {
           if (response.error) {
             toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
-            return;
+          } else {
+            dispatch(setMessageShown(false));
+            dispatch(setMessage('로그인 되었습니다.'));
+            router.push('/');
           }
-
-          router.push('/');
-          toast.success('로그인 성공.');
         });
     },
     []

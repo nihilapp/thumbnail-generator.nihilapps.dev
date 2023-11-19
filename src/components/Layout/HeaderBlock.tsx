@@ -1,14 +1,16 @@
+'use client';
+
 import React from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { configData } from '@/src/data';
-import { Nav } from './Nav';
+import { NavBlock } from './NavBlock';
 import { UserNav } from './UserNav';
 
 interface Props {
   styles?: ClassNameValue;
 }
 
-export function Header({ styles, }: Props) {
+export function HeaderBlock({ styles, }: Props) {
   const style = {
     default: twJoin([
       ``,
@@ -22,7 +24,7 @@ export function Header({ styles, }: Props) {
         <h1>{configData.title}</h1>
 
         <div>
-          <Nav />
+          <NavBlock />
           <UserNav />
         </div>
       </header>

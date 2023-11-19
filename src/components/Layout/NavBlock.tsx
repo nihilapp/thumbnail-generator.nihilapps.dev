@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { useAppDispatch } from '@/src/hooks/rtk';
-import { setUser } from '@/src/reducers';
+import { setSession, setUser } from '@/src/reducers';
 
 interface Props {
   styles?: ClassNameValue
 }
 
-export function Nav({ styles, }: Props) {
+export function NavBlock({ styles, }: Props) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -20,9 +20,11 @@ export function Nav({ styles, }: Props) {
         switch (event) {
           case 'SIGNED_IN':
             dispatch(setUser(session?.user));
+            dispatch(setSession(session));
             break;
           case 'SIGNED_OUT':
             dispatch(setUser(null));
+            dispatch(setSession(null));
             break;
           default:
             break;

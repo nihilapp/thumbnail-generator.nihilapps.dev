@@ -15,6 +15,7 @@ export function AuthButton({ styles, }: Props) {
         provider: 'google',
         options: {
           redirectTo: '/',
+          scopes: 'https://www.googleapis.com/auth/drive',
         },
       });
     },

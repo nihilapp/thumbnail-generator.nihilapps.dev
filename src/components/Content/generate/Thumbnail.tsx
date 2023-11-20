@@ -3,7 +3,7 @@
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { initState, setIsSettingSaved } from '@/src/reducers';
 import React, {
-  useCallback, useEffect, useRef, useState
+  useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
 import { toCanvas } from 'html-to-image';
@@ -14,6 +14,7 @@ import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { IDriveFolder } from '@/src/types/common.types';
+import { GoogleDrivePicker } from '../../Common';
 
 export function Thumbnail() {
   const [ randomId, ] = useState(() => Nihil.uuid(0));
@@ -21,6 +22,7 @@ export function Thumbnail() {
   const [ isLoading, setIsLoading, ] = useState(false);
   const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
+  const [ isShowPicker, setIsShowPicker, ] = useState(false);
   const [ driveFolder, setDriveFolder, ] = useState<IDriveFolder>(null);
 
   const thRef = useRef<HTMLDivElement>(null);
@@ -37,9 +39,9 @@ export function Thumbnail() {
     (state) => state.auth
   );
 
-  const { isSettingSaved, } = useAppSelector(
-    (state) => state.common
-  );
+  const userProviders = useMemo(() => {
+    return user.identities.map((item) => item.provider);
+  }, []);
 
   useEffect(() => {
     onClickReset();
@@ -49,21 +51,21 @@ export function Thumbnail() {
     };
   }, [ randomId, ]);
 
-  useEffect(() => {
-    if (isLoading) {
-      toCanvas(thRef.current, {
-        includeQueryParams: true,
-        backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
-        cacheBust: true,
-        type: 'image/png',
-      }).then((canvas) => {
-        setImageSrc(canvas.toDataURL('image/png'));
-      }).then(() => {
-        setIsLoading(false);
-        toast.success('썸네일 이미지가 생성되었습니다.');
-      });
-    }
-  }, [ isLoading, thRef, bgColor, ]);
+  // useEffect(() => {
+  //   if (isLoading) {
+  //     toCanvas(thRef.current, {
+  //       includeQueryParams: true,
+  //       backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
+  //       cacheBust: true,
+  //       type: 'image/png',
+  //     }).then((canvas) => {
+  //       setImageSrc(canvas.toDataURL('image/png'));
+  //     }).then(() => {
+  //       setIsLoading(false);
+  //       toast.success('썸네일 이미지가 생성되었습니다.');
+  //     });
+  //   }
+  // }, [ isLoading, thRef, bgColor, ]);
 
   const onClickReset = useCallback(
     () => {
@@ -126,8 +128,6 @@ export function Thumbnail() {
     [ imageSrc, title, user, ]
   );
 
-  console.log(isSettingSaved);
-
   const onClickGenerate = useCallback(
     () => {
       console.log('이미지 생성을 시작합니다.');
@@ -150,9 +150,16 @@ export function Thumbnail() {
     [ DefaultImage, ]
   );
 
-  const onClickGoogleUpload = useCallback(
+  const onClickShowPicker = useCallback(
     () => {
-      // TODO: 이 함수와 연결된 버튼을 클릭하면 GoogleDrivePicker 컴포넌트가 모달로 열리게끔 구성.
+      setIsShowPicker(true);
+    },
+    []
+  );
+
+  const onClickHidePicker = useCallback(
+    () => {
+      setIsShowPicker(false);
     },
     []
   );
@@ -207,7 +214,20 @@ export function Thumbnail() {
 
   return (
     <>
-      <button onClick={onClickGoogleUpload} className='mb-10 p-2 bg-blue-500 text-white'>구글 드라이브 픽커 테스트</button>
+      {/* 열기 버튼을 클릭하면 피커가 로드되게 구성 */}
+      {/* 피커가 로드되면 구글 드라이브에 있는 최상위 폴더들을 리스팅해줌. */}
+      {/* 최대 50개를 가져오고 더 있다면 추가로 가져옴. */}
+      {/* 폴더는 5열로 보여짐. */}
+      {/* 폴더를 클릭하면 그 폴더에 이미지 파일을 업로드 할 수 있음. */}
+      {/* 새로운 폴더를 만들 수도 있음. */}
+      {/* 오로지 최상위 폴더만 보임. */}
+      {isShowPicker && (
+        <>
+          <GoogleDrivePicker />
+          <button onClick={onClickHidePicker}>닫기</button>
+        </>
+      )}
+
       {isClick && (
         <div className={style.image} ref={imageRef}>
           <Image
@@ -228,11 +248,19 @@ export function Thumbnail() {
                 설정 저장
               </button>
             )}
+            {userProviders.includes('google') && (
+              <button
+                onClick={onClickShowPicker}
+                className='p-2 flex-1 block shrink-0 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
+              >
+                드라이브에 업로드
+              </button>
+            )}
             <button
               onClick={getImageFile}
               className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
             >
-              이미지 파일 다운로드
+              다운로드
             </button>
             <button
               id='close-button'

@@ -29,7 +29,7 @@ export function SignUpForm({ styles, }: Props) {
   const router = useRouter();
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
-    (data) => {
+    async (data) => {
       supabase.auth.signUp({
         email: data.email,
         password: data.password,

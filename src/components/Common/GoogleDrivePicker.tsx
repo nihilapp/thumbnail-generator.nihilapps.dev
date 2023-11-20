@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import axios from 'axios';
+import React, { useCallback, useEffect } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 
 interface Props {
@@ -11,6 +12,28 @@ interface Props {
 
 // TODO: 이 picker를 이용해서 폴더를 선택하면 그 폴더 정보를 리덕스에 저장하고 이미지를 그 폴더에 업로드 하는 과정을 보여주고, picker가 닫히게끔 구현하자.
 export function GoogleDrivePicker({ styles, }: Props) {
+  useEffect(() => {
+    const getFolders = async () => {
+      const response = await fetch('/api/drive/folders');
+      const data = await response.json();
+
+      console.log(data);
+    };
+
+    getFolders();
+  }, []);
+
+  const onClickCreateFolder = useCallback(
+    async () => {
+      const { data, } = await axios.post('/api/drive/folders', {
+        fileName: '새로운 폴더를 만들어요.',
+      });
+
+      console.log(data);
+    },
+    []
+  );
+
   const style = {
     default: twJoin([
       ``,
@@ -20,7 +43,7 @@ export function GoogleDrivePicker({ styles, }: Props) {
 
   return (
     <>
-      <div>content</div>
+      <button onClick={onClickCreateFolder}>폴더 만들기</button>
     </>
   );
 }

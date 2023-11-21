@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { initState, setIsSettingSaved } from '@/src/reducers';
+import { initState, setIsSettingSaved, setIsShowPicker } from '@/src/reducers';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
@@ -22,7 +22,6 @@ export function Thumbnail() {
   const [ isLoading, setIsLoading, ] = useState(false);
   const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
-  const [ isShowPicker, setIsShowPicker, ] = useState(false);
   const [ driveFolder, setDriveFolder, ] = useState<IDriveFolder>(null);
 
   const thRef = useRef<HTMLDivElement>(null);
@@ -37,6 +36,10 @@ export function Thumbnail() {
 
   const { user, session, } = useAppSelector(
     (state) => state.auth
+  );
+
+  const { isShowPicker, } = useAppSelector(
+    (state) => state.common
   );
 
   const userProviders = useMemo(() => {
@@ -156,14 +159,7 @@ export function Thumbnail() {
 
   const onClickShowPicker = useCallback(
     () => {
-      setIsShowPicker(true);
-    },
-    []
-  );
-
-  const onClickHidePicker = useCallback(
-    () => {
-      setIsShowPicker(false);
+      dispatch(setIsShowPicker(true));
     },
     []
   );
@@ -228,7 +224,6 @@ export function Thumbnail() {
       {isShowPicker && (
         <>
           <GoogleDrivePicker />
-          <button onClick={onClickHidePicker}>닫기</button>
         </>
       )}
 

@@ -4,12 +4,14 @@ interface InitialState {
   message: string;
   messageShown: boolean;
   isSettingSaved: boolean;
+  isShowPicker: boolean;
 }
 
 const initialState: InitialState = {
   message: '',
   messageShown: false,
   isSettingSaved: false,
+  isShowPicker: false,
 };
 
 const commonReducer = createSlice({
@@ -34,8 +36,16 @@ const commonReducer = createSlice({
     ) {
       state.isSettingSaved = payload;
     },
+    setIsShowPicker(
+      state,
+      { payload, }: PayloadAction<boolean>
+    ) {
+      state.isShowPicker = payload;
+    },
   },
 });
 
-export const { setMessage, setMessageShown, setIsSettingSaved, } = commonReducer.actions;
+export const {
+  setMessage, setMessageShown, setIsSettingSaved, setIsShowPicker,
+} = commonReducer.actions;
 export default commonReducer.reducer;

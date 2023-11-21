@@ -11,7 +11,7 @@ export const configData: IConfigData = {
   type: 'website',
   url: process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : 'https://test.nihilncunia.dev',
+    : 'https://thumbnail-generator.nihilapps.dev',
   image: '',
   version: 'v0.0.0',
 };

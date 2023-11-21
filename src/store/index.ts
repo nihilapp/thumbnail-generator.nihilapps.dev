@@ -15,6 +15,7 @@ import { exampleApi } from '../apis/example.api';
 import authReducer from '../reducers/auth.reducer';
 import thumbnailReducer from '../reducers/thumbnail.reducer';
 import commonReducer from '../reducers/common.reducer';
+import { driveApi } from '../apis/drive.api';
 
 const createNoopStorage = () => {
   return {
@@ -38,6 +39,7 @@ const storage = typeof window === 'undefined'
 
 const reducers = combineReducers({
   [exampleApi.reducerPath]: exampleApi.reducer,
+  [driveApi.reducerPath]: driveApi.reducer,
   auth: authReducer,
   thumbnail: thumbnailReducer,
   common: commonReducer,
@@ -46,7 +48,7 @@ const reducers = combineReducers({
 const persistedReducer = persistReducer({
   key: 'root',
   storage,
-  whitelist: [ 'auth', 'thumbnail', ],
+  whitelist: [ 'auth', 'thumbnail', driveApi.reducerPath, ],
   blacklist: [ 'common', exampleApi.reducerPath, ],
 }, reducers);
 
@@ -58,7 +60,10 @@ export const store = configureStore({
         ignoredActions: [ FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, ],
       },
     }),
-  ].concat(exampleApi.middleware),
+  ].concat(
+    exampleApi.middleware,
+    driveApi.middleware
+  ),
 });
 
 setupListeners(store.dispatch);

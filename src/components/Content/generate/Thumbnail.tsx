@@ -40,7 +40,11 @@ export function Thumbnail() {
   );
 
   const userProviders = useMemo(() => {
-    return user.identities.map((item) => item.provider);
+    if (user) {
+      return user.identities.map((item) => item.provider);
+    } else {
+      return [];
+    }
   }, []);
 
   useEffect(() => {

@@ -48,8 +48,8 @@ const reducers = combineReducers({
 const persistedReducer = persistReducer({
   key: 'root',
   storage,
-  whitelist: [ 'auth', 'thumbnail', driveApi.reducerPath, ],
-  blacklist: [ 'common', exampleApi.reducerPath, ],
+  whitelist: [ 'auth', 'thumbnail', ],
+  blacklist: [ 'common', exampleApi.reducerPath, driveApi.reducerPath, ],
 }, reducers);
 
 export const store = configureStore({

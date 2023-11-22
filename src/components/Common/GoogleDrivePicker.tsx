@@ -1,7 +1,7 @@
 'use client';
 
-import { useGetFoldersQuery } from '@/src/apis/drive.api';
-import { useAppDispatch } from '@/src/hooks/rtk';
+import { useCreateFolderMutation, useGetFoldersQuery, useUploadImageMutation } from '@/src/apis/drive.api';
+import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setIsShowPicker } from '@/src/reducers';
 import { Nihil } from '@/src/utils/nihil';
 import { Icon } from '@iconify/react';
@@ -9,10 +9,15 @@ import axios from 'axios';
 import React, {
   MouseEvent, useCallback, useEffect, useMemo, useState
 } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 
 interface Props {
   styles?: ClassNameValue;
+}
+
+interface Inputs {
+  newFolderName: string;
 }
 
 // TODO: 드라이브의 가장 최상위 폴더들을 리스팅하고 그 중에서 폴더를 선택하거나 새로운 폴더를 만들 수 있는 기능까지는 지원할 수 있는 간단한 뷰를 제공하는 것은 가능할 것으로 보임. 폴더 내부의 내부의 폴더 같은 경우는 굳이 넣을 필요도 없고 귀찮으므로 생략. picker의 방식은 모달로. 사실상 모달 위에 모달을 띄우는 격.
@@ -21,21 +26,33 @@ interface Props {
 export function GoogleDrivePicker({ styles, }: Props) {
   const [ folderId, setFolderId, ] = useState('');
   const [ folderName, setFolderName, ] = useState('');
+
+  const { title, imgSrc, } = useAppSelector(
+    (state) => state.thumbnail
+  );
+
   const {
-    data: folders, isSuccess, isLoading, isFetching, isError, error,
+    data: folders, isSuccess, isLoading, isFetching,
   } = useGetFoldersQuery(null, {
     pollingInterval: 600 * 1000,
   });
 
+  console.log('folders >> ', folders);
+
+  const { register, handleSubmit, } = useForm<Inputs>({
+    mode: 'all',
+  });
+
+  const [ createFolder, createResult, ] = useCreateFolderMutation();
+  const [ uploadImage, uploadResult, ] = useUploadImageMutation();
+
   const dispatch = useAppDispatch();
 
-  const onClickCreateFolder = useCallback(
-    async () => {
-      const { data, } = await axios.post('/api/drive/folders', {
-        fileName: '새로운 폴더를 만들어요.',
+  const onSubmitForm: SubmitHandler<Inputs> = useCallback(
+    (data) => {
+      createFolder({
+        folderName: data.newFolderName,
       });
-
-      console.log(data);
     },
     []
   );
@@ -50,13 +67,32 @@ export function GoogleDrivePicker({ styles, }: Props) {
   const onClickSelectFolder = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       const { id, } = event.currentTarget.dataset;
+      console.log('folders >> ', folders);
 
       const folder = folders.files.find((item) => item.id === id);
 
       setFolderId(id);
       setFolderName(folder.name);
     },
-    []
+    [ folders, ]
+  );
+
+  const onClickUploadImage = useCallback(
+    async () => {
+      const response = await fetch(imgSrc);
+      const data = await response.blob();
+
+      const image = new File([ data, ], 'image.png', {
+        type: 'image/png',
+      });
+
+      uploadImage({
+        folderId,
+        image,
+        imageName: title,
+      });
+    },
+    [ folderId, title, imgSrc, ]
   );
 
   const style = {
@@ -76,15 +112,13 @@ export function GoogleDrivePicker({ styles, }: Props) {
     h2: twJoin([
       'text-h2 font-900 text-black-base',
     ]),
+    input: twJoin([
+      'flex-1 shrink-0 p-2 bg-black-100 focus:bg-blue-100 outline-none text-black-base',
+    ]),
+    addButton: twJoin([
+      'bg-blue-500 hover:bg-blue-600 text-white p-2',
+    ]),
   };
-
-  // if (isError) {
-  //   return (
-  //     <div className={style.default}>
-
-  //     </div>
-  //   );
-  // }
 
   return (
     <>
@@ -103,30 +137,50 @@ export function GoogleDrivePicker({ styles, }: Props) {
           </div>
         )}
         {isSuccess && (
-          <div className={style.folders}>
-            {folders.files.map((item) => (
-              <div
-                key={Nihil.uuid(0)}
-                data-id={item.id}
-                title={item.name}
-                className={twJoin([
-                  style.folderItem,
-                  folderId === item.id && 'bg-black-600 text-white border-black-700',
-                ])}
-                onClick={onClickSelectFolder}
-              >
-                {item.name}
-              </div>
-            ))}
-          </div>
+          <>
+            <div className={style.folders}>
+              {folders.files.map((item) => (
+                <div
+                  key={Nihil.uuid(0)}
+                  data-id={item.id}
+                  title={item.name}
+                  className={twJoin([
+                    style.folderItem,
+                    folderId === item.id && 'bg-black-600 text-white border-black-700',
+                  ])}
+                  onClick={onClickSelectFolder}
+                >
+                  {item.name}
+                </div>
+              ))}
+            </div>
+            <form
+              onSubmit={handleSubmit(onSubmitForm)}
+              className='flex flex-row gap-2 w-full mb-2'
+            >
+              <input
+                type='text'
+                placeholder='새로운 폴더의 이름을 입력하세요'
+                {...register('newFolderName')}
+                className={style.input}
+              />
+              <button className={style.addButton}>새폴더 만들기</button>
+            </form>
+          </>
         )}
         <div>
-          {folderName && (
-            <p>선택한 폴더는 {folderName} 입니다.</p>
+          {folderName ? (
+            <p>
+              선택된 폴더는 <span className='font-900'>{folderName}</span> 입니다.
+            </p>
+          ) : (
+            <p>
+              아직 폴더를 선택하지 않았습니다.
+            </p>
           )}
         </div>
         <div className='flex flex-row gap-2'>
-          <button className='p-2 bg-blue-500 hover:bg-blue-700 text-white flex-1'>업로드</button>
+          <button className='p-2 bg-blue-500 hover:bg-blue-600 text-white flex-1' onClick={onClickUploadImage}>업로드</button>
           <button className='p-2 bg-red-400 hover:bg-red-500 text-white flex-1' onClick={onClickHidePicker}>닫기</button>
         </div>
       </div>

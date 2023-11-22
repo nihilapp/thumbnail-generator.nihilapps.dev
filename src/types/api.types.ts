@@ -9,3 +9,13 @@ export type EditBoard = {
   index: number;
   board: Partial<Board>;
 };
+
+export type CreateFolder = {
+  folderName: string;
+}
+
+export type UploadImage = {
+  folderId: string;
+  image: File;
+  imageName: string;
+}

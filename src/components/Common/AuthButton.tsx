@@ -16,6 +16,10 @@ export function AuthButton({ styles, }: Props) {
         options: {
           redirectTo: '/',
           scopes: 'https://www.googleapis.com/auth/drive',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
     },
@@ -47,8 +51,8 @@ export function AuthButton({ styles, }: Props) {
   return (
     <>
       <div className={style.buttons}>
-        <button onClick={onClickGoogle} className={style.button}>구글로 가입하기</button>
-        <button onClick={onClickGithub} className={style.button}>깃허브로 가입하기</button>
+        <button onClick={onClickGoogle} className={style.button}>구글로 로그인하기</button>
+        <button onClick={onClickGithub} className={style.button}>깃허브로 로그인하기</button>
       </div>
     </>
   );

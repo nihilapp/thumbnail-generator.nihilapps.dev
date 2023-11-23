@@ -1,11 +1,21 @@
+import { Tokens } from '@/src/types/api.types';
 import { createSupabaseServerClient } from '@/src/utils/supabase/server';
 import { HttpStatusCode } from 'axios';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const { searchParams, } = new URL(request.url);
+
+  const accessToken = searchParams.get('accessToken');
+  const refreshToken = searchParams.get('refreshToken');
+
+  console.log(accessToken);
+
   const response = createSupabaseServerClient();
   const { data: sessionData, } = await response.auth.getSession();
+
+  console.log('sessionData >> ', sessionData);
 
   const providers = sessionData.session.user.identities.map(
     (item) => item.provider
@@ -22,8 +32,8 @@ export async function GET() {
   const googleAuthClient = new google.auth.OAuth2();
 
   googleAuthClient.setCredentials({
-    access_token: sessionData.session.provider_token,
-    refresh_token: sessionData.session.provider_refresh_token,
+    access_token: accessToken,
+    refresh_token: refreshToken,
   });
 
   const drive = google.drive({

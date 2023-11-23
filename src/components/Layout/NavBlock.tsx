@@ -20,9 +20,6 @@ export function NavBlock({ styles, }: Props) {
       const { data: sessionData, } = await supabase.auth.getSession();
       const { data: userData, } = await supabase.auth.getUser();
 
-      console.log('userData >> ', userData);
-      console.log('sessionData >> ', sessionData);
-
       if (userData.user) {
         const expDate = new Date(sessionData.session.expires_at * 1000).getTime();
 
@@ -32,15 +29,42 @@ export function NavBlock({ styles, }: Props) {
         const diff = expDate - nowDate;
         console.log('만료까지 남은 시간 >> ', diff);
 
-        if (diff < 150000) {
-          console.log('세션이 오래되었습니다.');
-          supabase.auth.refreshSession({
-            refresh_token: sessionData.session.refresh_token,
-          }).then((response) => {
-            console.log('refresh 결과 >> ', response);
-          });
+        const { data, error, } = await supabase.auth.refreshSession({
+          refresh_token: sessionData.session.provider_refresh_token,
+        });
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        const { session: newSession, user: newUser, } = data;
+
+        dispatch(setSession(newSession));
+        dispatch(setUser(newUser));
+
+        if (diff < 0) {
+          console.log('세션이 만료되었습니다. 새로운 세션을 구성합니다.');
+        } else if (diff <= 150000) {
+          console.log('세션의 만료까지 150초 남았습니다. 새로운 세션을 구성합니다.');
         } else {
           console.log('올바른 세션입니다.');
+        }
+
+        if ((diff < 0) || (diff <= 150000)) {
+          const { data, error, } = await supabase.auth.refreshSession({
+            refresh_token: sessionData.session.provider_refresh_token,
+          });
+
+          if (error) {
+            console.error(error);
+            return;
+          }
+
+          const { session: newSession, user: newUser, } = data;
+
+          dispatch(setSession(newSession));
+          dispatch(setUser(newUser));
         }
       }
     };

@@ -1,3 +1,4 @@
+import { configData } from '@/src/data';
 import { createSupabaseServerClient } from '@/src/utils/supabase/server';
 import { HttpStatusCode } from 'axios';
 import { google } from 'googleapis';
@@ -5,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 interface PostBody {
   folderId: string;
-  image: File;
+  image: string;
   imageName: string;
 }
 
@@ -39,16 +40,22 @@ export async function POST(request: NextRequest) {
     auth: googleAuthClient,
   });
 
+  console.log('image >> ', image);
+  const parsedUrl = image.includes('http')
+    ? new URL(image)
+    : new URL(configData.url + image);
+
   const uploadResponse = await drive.files.create({
     media: {
       body: image,
       mimeType: 'image/png',
     },
     requestBody: {
-      name: imageName,
+      name: `${imageName}.png`,
       mimeType: 'image/png',
       parents: [ folderId, ],
     },
+    fields: 'id',
   });
 
   return NextResponse.json(uploadResponse, {

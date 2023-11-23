@@ -37,6 +37,7 @@
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "next": "^14.0.3",
+    "nodejs-base64": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-drive-picker": "^1.2.2",

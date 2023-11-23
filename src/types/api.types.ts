@@ -16,6 +16,11 @@ export type CreateFolder = {
 
 export type UploadImage = {
   folderId: string;
-  image: File;
+  image: string;
   imageName: string;
 }
+
+export type Tokens = {
+  accessToken: string;
+  refreshToken: string;
+};

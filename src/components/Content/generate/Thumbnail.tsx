@@ -58,21 +58,21 @@ export function Thumbnail() {
     };
   }, [ randomId, ]);
 
-  // useEffect(() => {
-  //   if (isLoading) {
-  //     toCanvas(thRef.current, {
-  //       includeQueryParams: true,
-  //       backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
-  //       cacheBust: true,
-  //       type: 'image/png',
-  //     }).then((canvas) => {
-  //       setImageSrc(canvas.toDataURL('image/png'));
-  //     }).then(() => {
-  //       setIsLoading(false);
-  //       toast.success('썸네일 이미지가 생성되었습니다.');
-  //     });
-  //   }
-  // }, [ isLoading, thRef, bgColor, ]);
+  useEffect(() => {
+    if (isLoading) {
+      toCanvas(thRef.current, {
+        includeQueryParams: true,
+        backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
+        cacheBust: true,
+        type: 'image/png',
+      }).then((canvas) => {
+        setImageSrc(canvas.toDataURL('image/png'));
+      }).then(() => {
+        setIsLoading(false);
+        toast.success('썸네일 이미지가 생성되었습니다.');
+      });
+    }
+  }, [ isLoading, thRef, bgColor, ]);
 
   const onClickReset = useCallback(
     () => {
@@ -223,7 +223,7 @@ export function Thumbnail() {
       {/* 오로지 최상위 폴더만 보임. */}
       {isShowPicker && (
         <>
-          <GoogleDrivePicker />
+          <GoogleDrivePicker imageFileSrc={imageSrc} />
         </>
       )}
 

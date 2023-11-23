@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { drive_v3 } from 'googleapis';
 import { GaxiosResponse } from 'gaxios';
 import { configData } from '../data';
-import { CreateFolder, UploadImage } from '../types/api.types';
+import { CreateFolder, Tokens, UploadImage } from '../types/api.types';
 
 export const driveApi = createApi({
   reducerPath: 'driveApi',
@@ -13,8 +13,15 @@ export const driveApi = createApi({
     baseUrl: `${configData.url}/api/drive`,
   }),
   endpoints: (builder) => ({
-    getFolders: builder.query<drive_v3.Schema$FileList, void>({
-      query: () => '/folders',
+    getFolders: builder.query<drive_v3.Schema$FileList, Tokens>({
+      query: (tokens) => ({
+        url: '/folders',
+        method: 'GET',
+        params: {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        },
+      }),
       providesTags: [ 'Drive', ],
     }),
     createFolder: builder.mutation<GaxiosResponse<drive_v3.Schema$File>, CreateFolder>({

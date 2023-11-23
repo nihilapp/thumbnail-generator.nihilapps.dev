@@ -29,20 +29,6 @@ export function NavBlock({ styles, }: Props) {
         const diff = expDate - nowDate;
         console.log('만료까지 남은 시간 >> ', diff);
 
-        const { data, error, } = await supabase.auth.refreshSession({
-          refresh_token: sessionData.session.provider_refresh_token,
-        });
-
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        const { session: newSession, user: newUser, } = data;
-
-        dispatch(setSession(newSession));
-        dispatch(setUser(newUser));
-
         if (diff < 0) {
           console.log('세션이 만료되었습니다. 새로운 세션을 구성합니다.');
         } else if (diff <= 150000) {
@@ -53,7 +39,7 @@ export function NavBlock({ styles, }: Props) {
 
         if ((diff < 0) || (diff <= 150000)) {
           const { data, error, } = await supabase.auth.refreshSession({
-            refresh_token: sessionData.session.provider_refresh_token,
+            refresh_token: sessionData.session.refresh_token,
           });
 
           if (error) {
@@ -74,12 +60,24 @@ export function NavBlock({ styles, }: Props) {
 
   useEffect(() => {
     const { data, } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
+        console.log(event);
+
         switch (event) {
-          case 'SIGNED_IN':
-            dispatch(setUser(session?.user));
-            dispatch(setSession(session));
-            break;
+          case 'SIGNED_IN': {
+            supabase.auth.updateUser({
+              data: {
+                provider_token: session.provider_token,
+                provider_refresh_token: session.provider_refresh_token,
+              },
+            }).then(({ data: { user, }, }) => {
+              dispatch(setUser(user));
+              session.user = user;
+              dispatch(setSession(session));
+            });
+
+            return;
+          }
           case 'SIGNED_OUT':
             dispatch(setUser(null));
             dispatch(setSession(null));

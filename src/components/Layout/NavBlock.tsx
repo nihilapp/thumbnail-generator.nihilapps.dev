@@ -72,8 +72,10 @@ export function NavBlock({ styles, }: Props) {
               },
             }).then(({ data: { user, }, }) => {
               dispatch(setUser(user));
-              session.user = user;
-              dispatch(setSession(session));
+
+              const newSession = { ...session, };
+              newSession.user = { ...user, };
+              dispatch(setSession(newSession));
             });
 
             return;

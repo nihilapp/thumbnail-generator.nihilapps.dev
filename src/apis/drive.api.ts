@@ -5,6 +5,8 @@ import { GaxiosResponse } from 'gaxios';
 import { configData } from '../data';
 import { CreateFolder, UploadImage } from '../types/api.types';
 
+type DriveResponse = GaxiosResponse<drive_v3.Schema$File>;
+
 export const driveApi = createApi({
   reducerPath: 'driveApi',
   refetchOnFocus: false,
@@ -17,7 +19,7 @@ export const driveApi = createApi({
       query: () => '/folders',
       providesTags: [ 'Drive', ],
     }),
-    createFolder: builder.mutation<GaxiosResponse<drive_v3.Schema$File>, CreateFolder>({
+    createFolder: builder.mutation<DriveResponse, CreateFolder>({
       query: (createFolder) => ({
         url: '/folders',
         method: 'POST',
@@ -25,12 +27,13 @@ export const driveApi = createApi({
       }),
       invalidatesTags: [ 'Drive', ],
     }),
-    uploadImage: builder.mutation<GaxiosResponse<drive_v3.Schema$File>, UploadImage>({
+    uploadImage: builder.mutation<DriveResponse, UploadImage>({
       query: (uploadImage) => ({
         url: '/images',
         method: 'POST',
         body: uploadImage,
       }),
+      invalidatesTags: [ 'Drive', ],
     }),
   }),
 });

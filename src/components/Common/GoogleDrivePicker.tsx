@@ -5,9 +5,8 @@ import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setIsShowPicker } from '@/src/reducers';
 import { Nihil } from '@/src/utils/nihil';
 import { Icon } from '@iconify/react';
-import axios from 'axios';
 import React, {
-  MouseEvent, useCallback, useEffect, useMemo, useState
+  MouseEvent, useCallback, useState
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
@@ -116,6 +115,12 @@ export function GoogleDrivePicker({ imageFileSrc, styles, }: Props) {
     addButton: twJoin([
       'bg-blue-500 hover:bg-blue-600 text-white p-2',
     ]),
+    cancelButton: twJoin([
+      `p-2 bg-red-400 hover:bg-red-500 text-white flex-1`,
+    ]),
+    uploadButton: twJoin([
+      `p-2 bg-blue-500 hover:bg-blue-600 text-white flex-1`,
+    ]),
   };
 
   return (
@@ -178,8 +183,8 @@ export function GoogleDrivePicker({ imageFileSrc, styles, }: Props) {
           )}
         </div>
         <div className='flex flex-row gap-2'>
-          <button className='p-2 bg-blue-500 hover:bg-blue-600 text-white flex-1' onClick={onClickUploadImage}>업로드</button>
-          <button className='p-2 bg-red-400 hover:bg-red-500 text-white flex-1' onClick={onClickHidePicker}>닫기</button>
+          <button className={style.uploadButton} onClick={onClickUploadImage}>업로드</button>
+          <button className={style.cancelButton} onClick={onClickHidePicker}>닫기</button>
         </div>
       </div>
     </>

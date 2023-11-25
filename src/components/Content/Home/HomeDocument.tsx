@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setMessage, setMessageShown } from '@/src/reducers';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { NoIcon, OkIcon } from '../../Common';
 
 interface Props {
@@ -26,14 +25,6 @@ export function HomeDocument({ styles, }: Props) {
       dispatch(setMessageShown(true));
     }
   }, [ message, messageShown, ]);
-
-  const onClick = useCallback(
-    async () => {
-      const { data, } = await axios.get('/api/google/refresh');
-      console.log(data);
-    },
-    []
-  );
 
   const style = {
     default: twJoin([
@@ -102,8 +93,6 @@ export function HomeDocument({ styles, }: Props) {
         <p>상단 메뉴에서 생성 페이지로 넘어가면 썸네일을 생성할 수 있습니다. 원하는 제목, 부제목을 입력하고 텍스트 색상을 설정한 뒤에 배경을 선택하면 됩니다.</p>
         <p>그 후에 이미지로 저장 버튼을 클릭하면 이미지가 생성됩니다. 이미지 생성에는 다소 시간이 소요될 수 있습니다.</p>
       </div>
-
-      <button onClick={onClick}>리프레시 테스트</button>
     </>
   );
 }

@@ -7,6 +7,11 @@ import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { User } from '@prisma/client';
+import { api, apiPost } from '@/src/utils/axios';
+import { ApiResponse, SignUpData } from '@/src/types/api.types';
+import { UserWithoutPassword } from '@/src/types/entity.types';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -15,6 +20,7 @@ interface Props {
 
 interface Inputs {
   email: string;
+  userName: string;
   password: string;
   passwordCheck: string;
 }
@@ -30,13 +36,25 @@ export function SignUpForm({ styles, }: Props) {
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
     async (data) => {
-      supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-      }).then(() => {
+      apiPost<ApiResponse<UserWithoutPassword>, SignUpData>(
+        '/auth/signup',
+        {
+          userName: data.userName,
+          email: data.email,
+          password: data.password,
+        }
+      ).then((response) => {
+        console.log(response.data.data);
         toast.success('회원가입이 완료되었습니다.');
         router.push('/');
       });
+      // supabase.auth.signUp({
+      //   email: data.email,
+      //   password: data.password,
+      // }).then(() => {
+      //   toast.success('회원가입이 완료되었습니다.');
+      //   router.push('/');
+      // });
     },
     []
   );
@@ -86,6 +104,21 @@ export function SignUpForm({ styles, }: Props) {
           {errors.email && (
             <span className={style.errorMessage}>{errors.email?.message}</span>
           )}
+        </label>
+
+        <label htmlFor='user-name' className={style.inputBlock}>
+          <span className={style.label}>닉네임</span>
+          <input
+            type='text'
+            id='user-name'
+            className={style.input}
+            {...register('userName', {
+              required: {
+                value: true,
+                message: '닉네임을 입력하세요.',
+              },
+            })}
+          />
         </label>
 
         <label htmlFor='password' className={style.inputBlock}>

@@ -1,3 +1,14 @@
+export type SignUpData = {
+  email: string;
+  userName: string;
+  password: string;
+}
+
+export type SignInData = {
+  email: string;
+  password: string;
+}
+
 export type Board = {
   id: number;
   userId: number;
@@ -24,3 +35,8 @@ export type Tokens = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type ApiResponse<T> = {
+  data: T;
+  message: string;
+}

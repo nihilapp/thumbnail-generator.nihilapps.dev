@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-const baseUrl = 'http://localhost:4000';
+const baseUrl = 'http://localhost:3000/api';
 
 const config: AxiosRequestConfig = {
   withCredentials: true,

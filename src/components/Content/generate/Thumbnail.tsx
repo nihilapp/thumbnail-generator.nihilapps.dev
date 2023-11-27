@@ -6,7 +6,7 @@ import React, {
   useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
-import { toCanvas } from 'html-to-image';
+import { toBlob, toCanvas } from 'html-to-image';
 import { Icon } from '@iconify/react';
 import { Nihil } from '@/src/utils/nihil';
 import Image from 'next/image';
@@ -60,17 +60,28 @@ export function Thumbnail() {
 
   useEffect(() => {
     if (isLoading) {
-      toCanvas(thRef.current, {
+      toBlob(thRef.current, {
         includeQueryParams: true,
         backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
         cacheBust: true,
         type: 'image/png',
-      }).then((canvas) => {
-        setImageSrc(canvas.toDataURL('image/png'));
+      }).then((blob) => {
+        setImageSrc(window.URL.createObjectURL(blob));
       }).then(() => {
         setIsLoading(false);
         toast.success('썸네일 이미지가 생성되었습니다.');
       });
+      // toCanvas(thRef.current, {
+      //   includeQueryParams: true,
+      //   backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
+      //   cacheBust: true,
+      //   type: 'image/png',
+      // }).then((canvas) => {
+      //   setImageSrc(canvas.toDataURL('image/png'));
+      // }).then(() => {
+      //   setIsLoading(false);
+      //   toast.success('썸네일 이미지가 생성되었습니다.');
+      // });
     }
   }, [ isLoading, thRef, bgColor, ]);
 

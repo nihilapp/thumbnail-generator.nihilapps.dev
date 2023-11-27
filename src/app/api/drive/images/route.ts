@@ -1,6 +1,8 @@
 import { configData } from '@/src/data';
+import { Auth } from '@/src/utils/auth';
 import { createSupabaseServerClient } from '@/src/utils/supabase/server';
-import { HttpStatusCode } from 'axios';
+import axios, { HttpStatusCode } from 'axios';
+import { Blob } from 'buffer';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -15,6 +17,7 @@ export async function POST(request: NextRequest) {
 
   const response = createSupabaseServerClient();
   const { data: sessionData, } = await response.auth.getSession();
+  const { data: { user, }, } = await response.auth.getUser();
 
   const providers = sessionData.session.user.identities.map(
     (item) => item.provider
@@ -29,10 +32,24 @@ export async function POST(request: NextRequest) {
   }
 
   const googleAuthClient = new google.auth.OAuth2();
+  const expTime = new Date(sessionData.session.expires_at * 1000).getTime();
+  const nowTime = new Date().getTime();
+
+  console.log(expTime, nowTime);
+
+  if (((expTime - nowTime) < 0) || (expTime - nowTime) < 150000) {
+    Auth.GoogleRefreshToken(sessionData.session.user.user_metadata.provider_refresh_token).then(({ data, }) => {
+      response.auth.updateUser({
+        data: {
+          provider_token: data.response.access_token,
+        },
+      });
+    });
+  }
 
   googleAuthClient.setCredentials({
-    access_token: sessionData.session.provider_token,
-    refresh_token: sessionData.session.provider_refresh_token,
+    access_token: user.user_metadata.provider_token,
+    refresh_token: user.user_metadata.provider_refresh_token,
   });
 
   const drive = google.drive({
@@ -40,14 +57,17 @@ export async function POST(request: NextRequest) {
     auth: googleAuthClient,
   });
 
-  console.log('image >> ', image);
-  const parsedUrl = image.includes('http')
-    ? new URL(image)
-    : new URL(configData.url + image);
+  const formData = new FormData();
+  let imageBlob = await fetch(image);
+  let imageBlob2 = await imageBlob.blob();
+
+  console.log();
+
+  formData.append('file', imageBlob2, 'image.png');
 
   const uploadResponse = await drive.files.create({
     media: {
-      body: image,
+      body: formData,
       mimeType: 'image/png',
     },
     requestBody: {
@@ -55,10 +75,14 @@ export async function POST(request: NextRequest) {
       mimeType: 'image/png',
       parents: [ folderId, ],
     },
+    uploadType: 'multipart',
     fields: 'id',
   });
 
-  return NextResponse.json(uploadResponse, {
+  return NextResponse.json({
+    response: uploadResponse,
+    message: '이미지 업로드에 성공했습니다.',
+  }, {
     status: HttpStatusCode.Ok,
   });
 }

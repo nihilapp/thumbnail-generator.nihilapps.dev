@@ -15,9 +15,9 @@ export function Providers({ children, }: Props) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        {/* <SessionProvider> */}
+        {children}
+        {/* </SessionProvider> */}
         <ToastContainer
           position='bottom-right'
           autoClose={5000}

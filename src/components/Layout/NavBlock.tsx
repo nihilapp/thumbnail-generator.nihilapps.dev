@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { useAppDispatch } from '@/src/hooks/rtk';
 import { setSession, setUser } from '@/src/reducers';
+import { Auth } from '@/src/utils/auth';
+import { toast } from 'react-toastify';
 
 interface Props {
   styles?: ClassNameValue
@@ -13,50 +15,7 @@ interface Props {
 
 export function NavBlock({ styles, }: Props) {
   const dispatch = useAppDispatch();
-  const nowDate = new Date().getTime();
-
-  useEffect(() => {
-    const refresh = async () => {
-      const { data: sessionData, } = await supabase.auth.getSession();
-      const { data: userData, } = await supabase.auth.getUser();
-
-      if (userData.user) {
-        const expDate = new Date(sessionData.session.expires_at * 1000).getTime();
-
-        console.log('nowDate >> ', nowDate, new Date(nowDate));
-        console.log('expDate >> ', expDate, new Date(expDate));
-
-        const diff = expDate - nowDate;
-        console.log('만료까지 남은 시간 >> ', diff);
-
-        if (diff < 0) {
-          console.log('세션이 만료되었습니다. 새로운 세션을 구성합니다.');
-        } else if (diff <= 150000) {
-          console.log('세션의 만료까지 150초 남았습니다. 새로운 세션을 구성합니다.');
-        } else {
-          console.log('올바른 세션입니다.');
-        }
-
-        if ((diff < 0) || (diff <= 150000)) {
-          const { data, error, } = await supabase.auth.refreshSession({
-            refresh_token: sessionData.session.refresh_token,
-          });
-
-          if (error) {
-            console.error(error);
-            return;
-          }
-
-          const { session: newSession, user: newUser, } = data;
-
-          dispatch(setSession(newSession));
-          dispatch(setUser(newUser));
-        }
-      }
-    };
-
-    refresh();
-  }, [ nowDate, ]);
+  const [ number, setNumber, ] = useState(0);
 
   useEffect(() => {
     const { data, } = supabase.auth.onAuthStateChange(
@@ -84,16 +43,89 @@ export function NavBlock({ styles, }: Props) {
             dispatch(setUser(null));
             dispatch(setSession(null));
             break;
+          case 'USER_UPDATED': {
+            if (!session.user) {
+              return;
+            }
+
+            const expDate = new Date(session.expires_at * 1000).getTime();
+
+            const diff = expDate - new Date().getTime();
+
+            console.log(diff);
+
+            const refresh = async () => {
+              if ((diff < 0) || (diff <= 150000)) {
+                switch (session.user.app_metadata.provider) {
+                  case 'google':
+                    Auth.GoogleRefreshToken(session.user.user_metadata.provider_refresh_token).then(async ({ data, }) => {
+                      toast.success(data.message);
+
+                      const newUser = await supabase.auth.updateUser({
+                        data: {
+                          provider_token: data.response.access_token,
+                        },
+                      });
+
+                      dispatch(setUser(newUser.data.user));
+                    });
+                    break;
+                  case 'github':
+                    break;
+                  default:
+                    break;
+                }
+              }
+            };
+
+            const supabaseRefresh = async () => {
+              if (session.user) {
+                if (diff < 0) {
+                  console.log('세션이 만료되었습니다. 새로운 세션을 구성합니다.');
+                } else if (diff <= 150000) {
+                  console.log('세션의 만료까지 150초 남았습니다. 새로운 세션을 구성합니다.');
+                } else {
+                  console.log('올바른 세션입니다.');
+                }
+
+                if ((diff < 0) || (diff <= 150000)) {
+                  const { data, error, } = await supabase.auth.refreshSession({
+                    refresh_token: session.refresh_token,
+                  });
+
+                  if (error) {
+                    console.error(error);
+                    return;
+                  }
+
+                  const { session: newSession, user: newUser, } = data;
+
+                  dispatch(setSession(newSession));
+                  dispatch(setUser(newUser));
+                }
+              }
+            };
+
+            refresh();
+            supabaseRefresh();
+            return;
+          }
           default:
             break;
         }
       }
     );
 
+    const interval = setInterval(() => {
+      setNumber((prev) => prev + 1);
+    }, 300000);
+
     return () => {
       data.subscription.unsubscribe();
+
+      clearInterval(interval);
     };
-  }, []);
+  }, [ number, ]);
 
   const style = {
     default: twJoin([

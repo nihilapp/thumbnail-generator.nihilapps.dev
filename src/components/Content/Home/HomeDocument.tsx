@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setMessage, setMessageShown } from '@/src/reducers';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import { signOut, useSession } from 'next-auth/react';
 import { NoIcon, OkIcon } from '../../Common';
 
 interface Props {
@@ -20,27 +18,13 @@ export function HomeDocument({ styles, }: Props) {
 
   const dispatch = useAppDispatch();
 
-  const session = useSession();
-
-  console.log(session);
-
   useEffect(() => {
     if (message && !messageShown) {
       toast.success(message);
       dispatch(setMessage(''));
       dispatch(setMessageShown(true));
-
-      console.log(session);
     }
-  }, [ message, messageShown, session, ]);
-
-  const onClickRefresh = useCallback(
-    async () => {
-      const { data, } = await axios.get('/api/google/refresh');
-      console.log(data);
-    },
-    []
-  );
+  }, [ message, messageShown, ]);
 
   const style = {
     default: twJoin([
@@ -51,7 +35,6 @@ export function HomeDocument({ styles, }: Props) {
 
   return (
     <>
-      <button onClick={() => signOut()}>로그아웃</button>
       <div className={style.default}>
         <h2>썸네일 생성기</h2>
         <p>썸네일 생성기는 말 그대로 썸네일을 생성하는 프로그램입니다. 포토샵만큼은 못하겠지만 간단한 썸네일 정도는 만들 수 있게끔 제공하려고 합니다. 썸네일 생성기는 PC 화면에 특화되어 있습니다. 기능의 특성상 모바일은 지원하지 않는 점 참고하시길 바랍니다.</p>

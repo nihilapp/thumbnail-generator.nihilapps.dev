@@ -7,11 +7,6 @@ import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { User } from '@prisma/client';
-import { api, apiPost } from '@/src/utils/axios';
-import { ApiResponse, SignUpData } from '@/src/types/api.types';
-import { UserWithoutPassword } from '@/src/types/entity.types';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -36,25 +31,18 @@ export function SignUpForm({ styles, }: Props) {
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
     async (data) => {
-      apiPost<ApiResponse<UserWithoutPassword>, SignUpData>(
-        '/auth/signup',
-        {
-          userName: data.userName,
-          email: data.email,
-          password: data.password,
-        }
-      ).then((response) => {
-        console.log(response.data.data);
+      supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            userName: data.userName,
+          },
+        },
+      }).then(() => {
         toast.success('회원가입이 완료되었습니다.');
         router.push('/');
       });
-      // supabase.auth.signUp({
-      //   email: data.email,
-      //   password: data.password,
-      // }).then(() => {
-      //   toast.success('회원가입이 완료되었습니다.');
-      //   router.push('/');
-      // });
     },
     []
   );
@@ -119,6 +107,9 @@ export function SignUpForm({ styles, }: Props) {
               },
             })}
           />
+          {errors.userName && (
+            <span className={style.errorMessage}>{errors.userName?.message}</span>
+          )}
         </label>
 
         <label htmlFor='password' className={style.inputBlock}>
@@ -175,13 +166,13 @@ export function SignUpForm({ styles, }: Props) {
         <button className={style.button}>회원가입</button>
       </form>
 
-      {process.env.NODE_ENV === 'development' && (
-        <DevTool control={control} placement='top-right' />
-      )}
-
       <div className='border-t border-black-300'>
         <AuthButton />
       </div>
+
+      {process.env.NODE_ENV === 'development' && (
+        <DevTool control={control} placement='top-right' />
+      )}
     </>
   );
 }

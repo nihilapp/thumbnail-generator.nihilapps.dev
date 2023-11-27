@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/hooks/rtk';
 import { setMessage, setMessageShown } from '@/src/reducers';
-import { signIn } from 'next-auth/react';
+import { supabase } from '@/src/utils/supabase/client';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -30,29 +30,16 @@ export function SignInForm({ styles, }: Props) {
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
     async (data) => {
-      signIn('credentials', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-      }).then((response) => {
-        if (response.error) {
-          toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
-        } else {
-          dispatch(setMessageShown(false));
-          dispatch(setMessage('로그인 되었습니다.'));
-          router.push('/');
-        }
-      });
-      // supabase.auth.signInWithPassword(data)
-      //   .then((response) => {
-      //     if (response.error) {
-      //       toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
-      //     } else {
-      //       dispatch(setMessageShown(false));
-      //       dispatch(setMessage('로그인 되었습니다.'));
-      //       router.push('/');
-      //     }
-      //   });
+      supabase.auth.signInWithPassword(data)
+        .then((response) => {
+          if (response.error) {
+            toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
+          } else {
+            dispatch(setMessageShown(false));
+            dispatch(setMessage('로그인 되었습니다.'));
+            router.push('/');
+          }
+        });
     },
     []
   );

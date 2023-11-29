@@ -1,23 +1,17 @@
-import { configData } from '@/src/data';
-import { Auth } from '@/src/utils/auth';
+import { UploadImage } from '@/src/types/api.types';
+import { Nihil } from '@/src/utils/nihil';
 import { createSupabaseServerClient } from '@/src/utils/supabase/server';
 import axios, { HttpStatusCode } from 'axios';
-import { Blob } from 'buffer';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
-
-interface PostBody {
-  folderId: string;
-  image: string;
-  imageName: string;
-}
+import { Readable } from 'stream';
 
 export async function POST(request: NextRequest) {
-  const { folderId, image, imageName, }: PostBody = await request.json();
+  const { folderId, imageFile, imageName, }: UploadImage = await request.json();
 
-  const response = createSupabaseServerClient();
-  const { data: sessionData, } = await response.auth.getSession();
-  const { data: { user, }, } = await response.auth.getUser();
+  const supabase = createSupabaseServerClient();
+  const { data: sessionData, } = await supabase.auth.getSession();
+  const { data: { user, }, } = await supabase.auth.getUser();
 
   const providers = sessionData.session.user.identities.map(
     (item) => item.provider
@@ -32,20 +26,6 @@ export async function POST(request: NextRequest) {
   }
 
   const googleAuthClient = new google.auth.OAuth2();
-  const expTime = new Date(sessionData.session.expires_at * 1000).getTime();
-  const nowTime = new Date().getTime();
-
-  console.log(expTime, nowTime);
-
-  if (((expTime - nowTime) < 0) || (expTime - nowTime) < 150000) {
-    Auth.GoogleRefreshToken(sessionData.session.user.user_metadata.provider_refresh_token).then(({ data, }) => {
-      response.auth.updateUser({
-        data: {
-          provider_token: data.response.access_token,
-        },
-      });
-    });
-  }
 
   googleAuthClient.setCredentials({
     access_token: user.user_metadata.provider_token,
@@ -57,27 +37,30 @@ export async function POST(request: NextRequest) {
     auth: googleAuthClient,
   });
 
-  const formData = new FormData();
-  let imageBlob = await fetch(image);
-  let imageBlob2 = await imageBlob.blob();
+  const { data: fileBlob, } = await supabase.storage
+    .from('thumbnails').download(imageFile);
 
-  console.log();
-
-  formData.append('file', imageBlob2, 'image.png');
+  const buffer = Buffer.from(await fileBlob.arrayBuffer());
+  const stream = Readable.from(buffer);
 
   const uploadResponse = await drive.files.create({
-    media: {
-      body: formData,
-      mimeType: 'image/png',
-    },
     requestBody: {
       name: `${imageName}.png`,
       mimeType: 'image/png',
       parents: [ folderId, ],
     },
-    uploadType: 'multipart',
-    fields: 'id',
+    media: {
+      mimeType: 'image/png',
+      body: stream,
+    },
+    fields: '*',
   });
+
+  const { data, } = await supabase.storage.from('thumbnails').remove([
+    imageFile,
+  ]);
+
+  console.log(data);
 
   return NextResponse.json({
     response: uploadResponse,

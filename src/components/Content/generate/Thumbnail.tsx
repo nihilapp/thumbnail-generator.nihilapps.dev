@@ -1,19 +1,20 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { initState, setIsSettingSaved, setIsShowPicker } from '@/src/reducers';
+import {
+  initState, setImageFileSrc, setIsSettingSaved, setIsShowPicker
+} from '@/src/reducers';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
-import { toBlob, toCanvas } from 'html-to-image';
+import { toBlob, toCanvas, toPng } from 'html-to-image';
 import { Icon } from '@iconify/react';
 import { Nihil } from '@/src/utils/nihil';
 import Image from 'next/image';
 import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
-import { IDriveFolder } from '@/src/types/common.types';
 import { GoogleDrivePicker } from '../../Common';
 
 export function Thumbnail() {
@@ -22,7 +23,7 @@ export function Thumbnail() {
   const [ isLoading, setIsLoading, ] = useState(false);
   const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
-  const [ driveFolder, setDriveFolder, ] = useState<IDriveFolder>(null);
+  const [ imagePath, setImagePath, ] = useState('');
 
   const thRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -60,30 +61,61 @@ export function Thumbnail() {
 
   useEffect(() => {
     if (isLoading) {
-      toBlob(thRef.current, {
+      toCanvas(thRef.current, {
         includeQueryParams: true,
         backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
         cacheBust: true,
         type: 'image/png',
-      }).then((blob) => {
-        setImageSrc(window.URL.createObjectURL(blob));
-      }).then(() => {
-        setIsLoading(false);
-        toast.success('썸네일 이미지가 생성되었습니다.');
+      }).then((canvas) => {
+        setImageSrc(canvas.toDataURL());
+        canvas.toBlob((blob) => {
+          const file = new File([ blob, ], 'image.png', {
+            type: 'image/png',
+          });
+
+          const folder = user.id;
+          const nowDate = Nihil.date().format();
+
+          supabase.storage.from('thumbnails').upload(
+            `${folder}/${nowDate}.png`,
+            file,
+            {
+              contentType: 'image/png',
+            }
+          ).then(async (response) => {
+            const fileUrl = supabase.storage
+              .from('thumbnails')
+              .getPublicUrl(response.data.path);
+
+            const settingSave = await supabase.from('thumbnails').insert({
+              title,
+              subTitle,
+              usersId: user.id,
+              textRed: textColor.red,
+              textGreen: textColor.green,
+              textBlue: textColor.blue,
+              bgRed: bgColor.red,
+              bgGreen: bgColor.green,
+              bgBlue: bgColor.blue,
+              imageSrc: imgSrc,
+              imagePosition: imageY,
+              imageLink: fileUrl.data.publicUrl,
+            });
+
+            if (!settingSave.error) {
+              toast.success('설정이 저장되었습니다.');
+            } else {
+              toast.error('설정이 저장되지 않았습니다.');
+            }
+
+            setImagePath(response.data.path);
+            setIsLoading(false);
+            toast.success('썸네일 이미지가 생성되었습니다.');
+          });
+        });
       });
-      // toCanvas(thRef.current, {
-      //   includeQueryParams: true,
-      //   backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
-      //   cacheBust: true,
-      //   type: 'image/png',
-      // }).then((canvas) => {
-      //   setImageSrc(canvas.toDataURL('image/png'));
-      // }).then(() => {
-      //   setIsLoading(false);
-      //   toast.success('썸네일 이미지가 생성되었습니다.');
-      // });
     }
-  }, [ isLoading, thRef, bgColor, ]);
+  }, [ isLoading, title, subTitle, thRef, bgColor, user, textColor, imgSrc, imageY, ]);
 
   const onClickReset = useCallback(
     () => {
@@ -94,32 +126,6 @@ export function Thumbnail() {
       setImageSrc(DefaultImage.src);
     },
     [ DefaultImage, ]
-  );
-
-  const saveThumbnail = useCallback(
-    async () => {
-      const response = await supabase.from('thumbnails').insert({
-        title,
-        sub_title: subTitle,
-        user_id: user.id,
-        color_red: textColor.red,
-        color_green: textColor.green,
-        color_blue: textColor.blue,
-        bg_red: bgColor.red,
-        bg_green: bgColor.green,
-        bg_blue: bgColor.blue,
-        bg_image: imgSrc,
-        bg_position: imageY,
-      });
-
-      if (!response.error) {
-        toast.success('설정이 저장되었습니다.');
-        dispatch(setIsSettingSaved(true));
-      } else {
-        toast.error('설정이 저장되지 않았습니다.');
-      }
-    },
-    [ title, subTitle, textColor, bgColor, imgSrc, imageY, user, ]
   );
 
   const getImageFile = useCallback(
@@ -163,6 +169,7 @@ export function Thumbnail() {
         setIsClick(false);
         setImageSrc(DefaultImage.src);
         setIsSave(false);
+        dispatch(initState());
       }
     },
     [ DefaultImage, ]
@@ -234,7 +241,7 @@ export function Thumbnail() {
       {/* 오로지 최상위 폴더만 보임. */}
       {isShowPicker && (
         <>
-          <GoogleDrivePicker imageFileSrc={imageSrc} />
+          <GoogleDrivePicker />
         </>
       )}
 
@@ -249,29 +256,22 @@ export function Thumbnail() {
           />
 
           <div className='flex flex-row gap-2 w-[1280px]'>
-            {user && (
-              <button
-                onClick={saveThumbnail}
-                disabled={!isSave}
-                className={style.closeButton}
-              >
-                설정 저장
-              </button>
-            )}
-            {userProviders.includes('google') && (
+            {/* {user && userProviders.includes('google') && (
               <button
                 onClick={onClickShowPicker}
                 className='p-2 flex-1 block shrink-0 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
               >
                 드라이브에 업로드
               </button>
-            )}
+            )} */}
+
             <button
               onClick={getImageFile}
               className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
             >
               다운로드
             </button>
+
             <button
               id='close-button'
               onClick={onClickClose}

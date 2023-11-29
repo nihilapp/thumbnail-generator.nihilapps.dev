@@ -14,6 +14,7 @@ type State = {
   bgColor: Color;
   imgSrc: string;
   imageY: number;
+  imageFileSrc: Blob;
 }
 
 const initialState: State = {
@@ -32,6 +33,7 @@ const initialState: State = {
   },
   imgSrc: '',
   imageY: 0,
+  imageFileSrc: null,
 };
 
 const appReducer = createSlice({
@@ -97,10 +99,16 @@ const appReducer = createSlice({
     ) {
       state.imageY = payload;
     },
+    setImageFileSrc(
+      state,
+      { payload, }: PayloadAction<Blob>
+    ) {
+      state.imageFileSrc = payload;
+    },
   },
 });
 
 export const {
-  initState, setBgColor, setBgType, setImg, setSubTitle, setTextColor, setTitle, setY,
+  initState, setBgColor, setBgType, setImg, setSubTitle, setTextColor, setTitle, setY, setImageFileSrc,
 } = appReducer.actions;
 export default appReducer.reducer;

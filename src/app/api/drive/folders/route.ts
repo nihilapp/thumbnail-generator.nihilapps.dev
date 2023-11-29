@@ -1,15 +1,12 @@
-import { Auth } from '@/src/utils/auth';
 import { createSupabaseServerClient } from '@/src/utils/supabase/server';
 import { HttpStatusCode } from 'axios';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
-  const response = createSupabaseServerClient();
-  const { data: sessionData, } = await response.auth.getSession();
-  const { data: { user, }, } = await response.auth.getUser();
-
-  console.log('sessionData >> ', sessionData);
+  const supabase = createSupabaseServerClient();
+  const { data: sessionData, } = await supabase.auth.getSession();
+  const { data: { user, }, } = await supabase.auth.getUser();
 
   const providers = sessionData.session.user.identities.map(
     (item) => item.provider
@@ -24,21 +21,6 @@ export async function GET() {
   }
 
   const googleAuthClient = new google.auth.OAuth2();
-
-  const expTime = new Date(sessionData.session.expires_at * 1000).getTime();
-  const nowTime = new Date().getTime();
-
-  console.log(expTime, nowTime);
-
-  if (((expTime - nowTime) < 0) || (expTime - nowTime) < 150000) {
-    Auth.GoogleRefreshToken(sessionData.session.user.user_metadata.provider_refresh_token).then(({ data, }) => {
-      response.auth.updateUser({
-        data: {
-          provider_token: data.response.access_token,
-        },
-      });
-    });
-  }
 
   googleAuthClient.setCredentials({
     access_token: user.user_metadata.provider_token,

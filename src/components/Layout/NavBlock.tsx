@@ -4,18 +4,26 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
-import { useAppDispatch } from '@/src/hooks/rtk';
+import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setSession, setUser } from '@/src/reducers';
 import { Auth } from '@/src/utils/auth';
 import { toast } from 'react-toastify';
+import { Nihil } from '@/src/utils/nihil';
+import { usePathname } from 'next/navigation';
 
 interface Props {
   styles?: ClassNameValue
 }
 
 export function NavBlock({ styles, }: Props) {
-  const dispatch = useAppDispatch();
   const [ number, setNumber, ] = useState(0);
+
+  const { user: userData, session: sessionData, } = useAppSelector(
+    (state) => state.auth
+  );
+
+  const dispatch = useAppDispatch();
+  const pathName = usePathname();
 
   useEffect(() => {
     const { data, } = supabase.auth.onAuthStateChange(
@@ -23,72 +31,60 @@ export function NavBlock({ styles, }: Props) {
         console.log(event);
 
         switch (event) {
+          case 'INITIAL_SESSION':
           case 'SIGNED_IN': {
-            supabase.auth.updateUser({
-              data: {
-                provider_token: session.provider_token,
-                provider_refresh_token: session.provider_refresh_token,
-              },
-            }).then(({ data: { user, }, }) => {
-              dispatch(setUser(user));
+            console.log('user >> ', userData);
+            console.log('session >> ', sessionData);
 
-              const newSession = { ...session, };
-              newSession.user = { ...user, };
-              dispatch(setSession(newSession));
-            });
+            if (userData) {
+              let userName: string;
 
+              if (!session.user.user_metadata.userName) {
+                userName = session.user.user_metadata.name;
+              } else {
+                userName = session.user.user_metadata.userName;
+              }
+
+              supabase.auth.updateUser({
+                data: {
+                  provider_token: session.provider_token,
+                  provider_refresh_token: session.provider_refresh_token,
+                  exp: Nihil
+                    .date(session.expires_at * 1000)
+                    .format(),
+                  userName,
+                },
+              }).then(({ data: { user, }, }) => {
+                dispatch(setUser(user));
+
+                const newSession = { ...session, };
+                newSession.user = { ...user, };
+
+                dispatch(setSession(newSession));
+                console.log('[세션] 세션 정보 업데이트');
+              });
+            } else {
+              dispatch(setUser(session.user));
+              dispatch(setSession(session));
+              console.log('[세션] 로그인');
+            }
             return;
           }
           case 'SIGNED_OUT':
             dispatch(setUser(null));
             dispatch(setSession(null));
+            console.log('[세션] 로그아웃');
             break;
           case 'USER_UPDATED': {
             if (!session.user) {
               return;
             }
 
-            const expDate = new Date(session.expires_at * 1000).getTime();
-
-            const diff = expDate - new Date().getTime();
-
-            console.log(diff);
-
             const refresh = async () => {
-              if ((diff < 0) || (diff <= 150000)) {
-                switch (session.user.app_metadata.provider) {
-                  case 'google':
-                    Auth.GoogleRefreshToken(session.user.user_metadata.provider_refresh_token).then(async ({ data, }) => {
-                      toast.success(data.message);
+              Auth.expDiff().then(async (response) => {
+                if (response) {
+                  console.log('[세션] 세션의 만료까지 300초 남았습니다. 새로운 세션을 구성합니다.');
 
-                      const newUser = await supabase.auth.updateUser({
-                        data: {
-                          provider_token: data.response.access_token,
-                        },
-                      });
-
-                      dispatch(setUser(newUser.data.user));
-                    });
-                    break;
-                  case 'github':
-                    break;
-                  default:
-                    break;
-                }
-              }
-            };
-
-            const supabaseRefresh = async () => {
-              if (session.user) {
-                if (diff < 0) {
-                  console.log('세션이 만료되었습니다. 새로운 세션을 구성합니다.');
-                } else if (diff <= 150000) {
-                  console.log('세션의 만료까지 150초 남았습니다. 새로운 세션을 구성합니다.');
-                } else {
-                  console.log('올바른 세션입니다.');
-                }
-
-                if ((diff < 0) || (diff <= 150000)) {
                   const { data, error, } = await supabase.auth.refreshSession({
                     refresh_token: session.refresh_token,
                   });
@@ -102,12 +98,31 @@ export function NavBlock({ styles, }: Props) {
 
                   dispatch(setSession(newSession));
                   dispatch(setUser(newUser));
+
+                  switch (session.user.app_metadata.provider) {
+                    case 'google':
+                      Auth.GoogleRefreshToken().then(async (response) => {
+                        toast.success(response.message);
+
+                        dispatch(setUser(response.newUser));
+
+                        const newSession = { ...session, };
+                        newSession.user = { ...response.newUser, };
+
+                        dispatch(setSession(newSession));
+                        console.log('[구글] 액세스 토큰 재발급');
+                      });
+                      break;
+                    case 'github':
+                      break;
+                    default:
+                      break;
+                  }
                 }
-              }
+              });
             };
 
             refresh();
-            supabaseRefresh();
             return;
           }
           default:
@@ -117,15 +132,15 @@ export function NavBlock({ styles, }: Props) {
     );
 
     const interval = setInterval(() => {
+      console.log(number);
       setNumber((prev) => prev + 1);
-    }, 300000);
+    }, 180000);
 
     return () => {
       data.subscription.unsubscribe();
-
       clearInterval(interval);
     };
-  }, [ number, ]);
+  }, [ pathName, number, ]);
 
   const style = {
     default: twJoin([

@@ -27,7 +27,7 @@ export type CreateFolder = {
 
 export type UploadImage = {
   folderId: string;
-  image: string;
+  imageFile: string;
   imageName: string;
 }
 

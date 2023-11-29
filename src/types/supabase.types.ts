@@ -11,59 +11,57 @@ export interface Database {
     Tables: {
       thumbnails: {
         Row: {
-          bg_blue: number | null
-          bg_green: number | null
-          bg_image: string | null
-          bg_position: number | null
-          bg_red: number | null
-          color_blue: number | null
-          color_green: number | null
-          color_red: number | null
-          created_at: string
-          id: number
-          sub_title: string | null
+          bgBlue: number | null
+          bgGreen: number | null
+          bgRed: number | null
+          created: string | null
+          id: string
+          imagePosition: number | null
+          imageSrc: string | null
+          imageLink: string | null
+          subTitle: string | null
+          textBlue: number | null
+          textGreen: number | null
+          textRed: number | null
           title: string
-          user_id: string
+          updated: string | null
+          usersId: string
         }
         Insert: {
-          bg_blue?: number | null
-          bg_green?: number | null
-          bg_image?: string | null
-          bg_position?: number | null
-          bg_red?: number | null
-          color_blue?: number | null
-          color_green?: number | null
-          color_red?: number | null
-          created_at?: string
-          id?: number
-          sub_title?: string | null
+          bgBlue?: number | null
+          bgGreen?: number | null
+          bgRed?: number | null
+          created?: string | null
+          id?: string
+          imagePosition?: number | null
+          imageSrc?: string | null
+          imageLink?: string | null
+          subTitle?: string | null
+          textBlue?: number | null
+          textGreen?: number | null
+          textRed?: number | null
           title: string
-          user_id: string
+          updated?: string | null
+          usersId: string
         }
         Update: {
-          bg_blue?: number | null
-          bg_green?: number | null
-          bg_image?: string | null
-          bg_position?: number | null
-          bg_red?: number | null
-          color_blue?: number | null
-          color_green?: number | null
-          color_red?: number | null
-          created_at?: string
-          id?: number
-          sub_title?: string | null
+          bgBlue?: number | null
+          bgGreen?: number | null
+          bgRed?: number | null
+          created?: string | null
+          id?: string
+          imagePosition?: number | null
+          imageSrc?: string | null
+          imageLink?: string | null
+          subTitle?: string | null
+          textBlue?: number | null
+          textGreen?: number | null
+          textRed?: number | null
           title?: string
-          user_id?: string
+          updated?: string | null
+          usersId?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: 'thumbnails_user_id_fkey'
-            columns: ['user_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          }
-        ]
+        Relationships: []
       }
     }
     Views: {

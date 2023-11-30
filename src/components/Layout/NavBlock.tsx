@@ -122,7 +122,7 @@ export function NavBlock({ styles, }: Props) {
               });
             };
 
-            refresh();
+            await refresh();
             return;
           }
           default:

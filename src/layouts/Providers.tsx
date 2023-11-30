@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '@/src/store';
 import { ToastContainer } from 'react-toastify';
-import { SessionProvider } from 'next-auth/react';
 
 interface Props {
   children: React.ReactNode;

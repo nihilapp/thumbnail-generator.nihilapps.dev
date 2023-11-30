@@ -2,19 +2,20 @@
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import {
-  initState, setImageFileSrc, setIsSettingSaved, setIsShowPicker
+  initState, setIsSettingSaved, setIsShowPicker
 } from '@/src/reducers';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
-import { toBlob, toCanvas, toPng } from 'html-to-image';
+import { toCanvas } from 'html-to-image';
 import { Icon } from '@iconify/react';
 import { Nihil } from '@/src/utils/nihil';
 import Image from 'next/image';
 import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 import { GoogleDrivePicker } from '../../Common';
 
 export function Thumbnail() {
@@ -24,10 +25,12 @@ export function Thumbnail() {
   const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
   const [ imagePath, setImagePath, ] = useState('');
+  const [ rowId, setRowId, ] = useState('');
 
   const thRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const {
     title, subTitle, bgType, imgSrc, bgColor, textColor, imageY,
@@ -100,7 +103,11 @@ export function Thumbnail() {
               imageSrc: imgSrc,
               imagePosition: imageY,
               imageLink: fileUrl.data.publicUrl,
-            });
+            }).select('id');
+
+            if (settingSave.data) {
+              setRowId(settingSave.data[0].id);
+            }
 
             if (!settingSave.error) {
               toast.success('설정이 저장되었습니다.');
@@ -124,6 +131,7 @@ export function Thumbnail() {
       setIsLoading(false);
       setIsSave(false);
       setImageSrc(DefaultImage.src);
+      setRowId('');
     },
     [ DefaultImage, ]
   );
@@ -170,6 +178,7 @@ export function Thumbnail() {
         setImageSrc(DefaultImage.src);
         setIsSave(false);
         dispatch(initState());
+        setRowId('');
       }
     },
     [ DefaultImage, ]
@@ -181,6 +190,10 @@ export function Thumbnail() {
     },
     []
   );
+
+  const onClickManage = useCallback(() => {
+    router.push(`/thumbnails/${rowId}`);
+  }, [ rowId, ]);
 
   const style = {
     container: twJoin([
@@ -264,6 +277,13 @@ export function Thumbnail() {
                 드라이브에 업로드
               </button>
             )} */}
+            {user && (
+              <button
+                onClick={onClickManage}
+              >
+                썸네일 관리
+              </button>
+            )}
 
             <button
               onClick={getImageFile}

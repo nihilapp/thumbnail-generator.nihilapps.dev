@@ -33,9 +33,6 @@ export function NavBlock({ styles, }: Props) {
         switch (event) {
           case 'INITIAL_SESSION':
           case 'SIGNED_IN': {
-            console.log('user >> ', userData);
-            console.log('session >> ', sessionData);
-
             if (userData) {
               let userName: string;
 
@@ -61,11 +58,18 @@ export function NavBlock({ styles, }: Props) {
                 newSession.user = { ...user, };
 
                 dispatch(setSession(newSession));
+
+                console.log('user >> ', userData);
+                console.log('session >> ', sessionData);
+
                 console.log('[세션] 세션 정보 업데이트');
               });
             } else {
-              dispatch(setUser(session.user));
+              dispatch(setUser(session?.user));
               dispatch(setSession(session));
+              console.log('user >> ', userData);
+              console.log('session >> ', sessionData);
+
               console.log('[세션] 로그인');
             }
             return;

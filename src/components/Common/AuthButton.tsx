@@ -55,6 +55,9 @@ export function AuthButton({ styles, }: Props) {
   return (
     <>
       <div className={style.buttons}>
+        <button className={style.button}>
+          구글 로그인 후 일반
+        </button>
         <button
           onClick={onClickGoogle}
           className={style.button}

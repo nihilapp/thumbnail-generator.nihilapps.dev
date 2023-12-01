@@ -15,17 +15,13 @@
     "serve": "yarn run remove && next dev",
     "start": "yarn run remove && next build && next start",
     "build": "yarn run remove && next build",
-    "clean": "yarn cache clean",
-    "pull": "dotenv -e .env.local -- yarn prisma db pull",
-    "push": "dotenv -e .env.local -- yarn prisma db push",
-    "migrate": "dotenv -e .env.local -- yarn prisma migrate dev --name create"
+    "clean": "yarn cache clean"
   },
   "keywords": [],
   "author": "NIHILncunia",
   "license": "MIT",
   "dependencies": {
     "@iconify/react": "^4.1.1",
-    "@prisma/client": "^5.6.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@supabase/ssr": "^0.0.10",
     "@supabase/supabase-js": "^2.38.4",
@@ -69,8 +65,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.31",
-    "prisma": "^5.6.0",
-    "supabase": "^1.112.0",
+    "supabase": "^1.115.4",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2"
   }

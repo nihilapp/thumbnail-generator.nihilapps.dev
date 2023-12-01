@@ -666,7 +666,7 @@ export interface Database {
           textRed: number | null
           title: string
           updated: string | null
-          usersId: string
+          userId: string
         }
         Insert: {
           bgBlue?: number | null
@@ -683,7 +683,7 @@ export interface Database {
           textRed?: number | null
           title: string
           updated?: string | null
-          usersId: string
+          userId: string
         }
         Update: {
           bgBlue?: number | null
@@ -700,9 +700,44 @@ export interface Database {
           textRed?: number | null
           title?: string
           updated?: string | null
-          usersId?: string
+          userId?: string
         }
         Relationships: []
+      }
+      user_info: {
+        Row: {
+          github_email: string | null
+          google_email: string | null
+          id: number
+          kakao_email: string | null
+          naver_email: string | null
+          user_id: string
+        }
+        Insert: {
+          github_email?: string | null
+          google_email?: string | null
+          id?: number
+          kakao_email?: string | null
+          naver_email?: string | null
+          user_id: string
+        }
+        Update: {
+          github_email?: string | null
+          google_email?: string | null
+          id?: number
+          kakao_email?: string | null
+          naver_email?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_info_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          }
+        ]
       }
     }
     Views: {

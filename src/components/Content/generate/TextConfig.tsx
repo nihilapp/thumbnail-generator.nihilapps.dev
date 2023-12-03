@@ -27,7 +27,7 @@ export function TextConfig() {
     []
   );
 
-  const style = {
+  const css = {
     inputs: twJoin([
       `space-y-2 p-5 bg-white border-2 border-t-0 border-black-600`,
     ]),
@@ -47,32 +47,34 @@ export function TextConfig() {
 
   return (
     <>
-      <h2 className={style.h2}>텍스트 설정</h2>
-      <div className={style.inputs}>
-        <label htmlFor='title' className={style.inputBlock}>
-          <span className={style.label}>제목</span>
+      <h2 className={css.h2}>텍스트 설정</h2>
+      <div className={css.inputs}>
+        <label htmlFor='title' className={css.inputBlock}>
+          <span className={css.label}>제목</span>
           <input
             type='text'
             id='title'
             placeholder='제목'
+            autoComplete='off'
             value={title}
             onChange={onChangeTitle}
-            className={style.input}
+            className={css.input}
           />
         </label>
-        <label htmlFor='sub-title' className={style.inputBlock}>
-          <span className={style.label}>부제</span>
+        <label htmlFor='sub-title' className={css.inputBlock}>
+          <span className={css.label}>부제</span>
           <input
             type='text'
             id='sub-title'
             placeholder='부제'
+            autoComplete='off'
             value={subTitle}
             onChange={onChangeSubTitle}
-            className={style.input}
+            className={css.input}
           />
         </label>
         <div>
-          <span className={style.label}>색상</span>
+          <span className={css.label}>색상</span>
           <ColorSlider type='text' />
         </div>
       </div>

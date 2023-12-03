@@ -652,55 +652,55 @@ export interface Database {
     Tables: {
       thumbnails: {
         Row: {
-          bgBlue: number | null
-          bgGreen: number | null
-          bgRed: number | null
+          bg_blue: number | null
+          bg_green: number | null
+          bg_position: number | null
+          bg_red: number | null
+          bg_src: string | null
           created: string | null
           id: string
-          imageLink: string | null
-          imagePosition: number | null
-          imageSrc: string | null
-          subTitle: string | null
-          textBlue: number | null
-          textGreen: number | null
-          textRed: number | null
+          image_link: string | null
+          sub_title: string | null
+          text_blue: number | null
+          text_green: number | null
+          text_red: number | null
           title: string
           updated: string | null
-          userId: string
+          user_id: string
         }
         Insert: {
-          bgBlue?: number | null
-          bgGreen?: number | null
-          bgRed?: number | null
+          bg_blue?: number | null
+          bg_green?: number | null
+          bg_position?: number | null
+          bg_red?: number | null
+          bg_src?: string | null
           created?: string | null
           id?: string
-          imageLink?: string | null
-          imagePosition?: number | null
-          imageSrc?: string | null
-          subTitle?: string | null
-          textBlue?: number | null
-          textGreen?: number | null
-          textRed?: number | null
+          image_link?: string | null
+          sub_title?: string | null
+          text_blue?: number | null
+          text_green?: number | null
+          text_red?: number | null
           title: string
           updated?: string | null
-          userId: string
+          user_id: string
         }
         Update: {
-          bgBlue?: number | null
-          bgGreen?: number | null
-          bgRed?: number | null
+          bg_blue?: number | null
+          bg_green?: number | null
+          bg_position?: number | null
+          bg_red?: number | null
+          bg_src?: string | null
           created?: string | null
           id?: string
-          imageLink?: string | null
-          imagePosition?: number | null
-          imageSrc?: string | null
-          subTitle?: string | null
-          textBlue?: number | null
-          textGreen?: number | null
-          textRed?: number | null
+          image_link?: string | null
+          sub_title?: string | null
+          text_blue?: number | null
+          text_green?: number | null
+          text_red?: number | null
           title?: string
           updated?: string | null
-          userId?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -1,19 +1,20 @@
 'use client';
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setMessage, setMessageShown } from '@/src/reducers';
+import { setMessage, setMessageShown, setMessageType } from '@/src/reducers';
 import { supabase } from '@/src/utils/supabase/client';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
+import { PageLink } from '@/src/components/Common';
+import { Icon } from '@iconify/react';
 
 interface Props {
   styles?: ClassNameValue;
 }
 
 export function UserNav({ styles, }: Props) {
-  const { user, session, } = useAppSelector(
+  const { user, } = useAppSelector(
     (state) => state.auth
   );
 
@@ -24,6 +25,7 @@ export function UserNav({ styles, }: Props) {
     () => {
       supabase.auth.signOut()
         .then(() => {
+          dispatch(setMessageType('success'));
           dispatch(setMessageShown(false));
           dispatch(setMessage('로그아웃 되었습니다.'));
           router.push('/');
@@ -32,26 +34,34 @@ export function UserNav({ styles, }: Props) {
     []
   );
 
-  const style = {
+  const css = {
     default: twJoin([
-      ``,
+      `flex flex-row`,
       styles,
+    ]),
+    signOut: twJoin([
+      `p-2 px-4 flex flex-col items-center justify-center border-l border-b-0 border-t-0 border-black-200 hover:border-black-400 hover:bg-black-400 bg-white text-black-base hover:text-white`,
     ]),
   };
 
   return (
     <>
-      <nav className={style.default}>
+      <nav className={css.default}>
         {user ? (
           <>
-            <span>{user.email}님 환영합니다.</span>
-            <Link href='/mypage'>마이페이지</Link>
-            <button onClick={onClickSignOut}>로그아웃</button>
+            <PageLink href='/mypage' as='/mypage' icon='mdi:account'>마이페이지</PageLink>
+            <button
+              onClick={onClickSignOut}
+              className={css.signOut}
+            >
+              <Icon icon='mdi:logout-variant' className='text-[1.5rem]' />
+              로그아웃
+            </button>
           </>
         ) : (
           <>
-            <Link href='/signup'>회원가입</Link>
-            <Link href='/signin'>로그인</Link>
+            <PageLink href='/signup' as='/signup' icon='mdi:account-plus'>회원가입</PageLink>
+            <PageLink href='/signin' as='/signin' icon='mdi:login-variant'>로그인</PageLink>
           </>
         )}
       </nav>

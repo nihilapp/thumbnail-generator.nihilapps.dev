@@ -1,6 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
+type ToastType = ('info' | 'success' | 'warning' | 'error' | 'default');
+
 interface InitialState {
+  messageType: ToastType;
   message: string;
   messageShown: boolean;
   isSettingSaved: boolean;
@@ -8,6 +11,7 @@ interface InitialState {
 }
 
 const initialState: InitialState = {
+  messageType: 'success',
   message: '',
   messageShown: false,
   isSettingSaved: false,
@@ -42,10 +46,20 @@ const commonReducer = createSlice({
     ) {
       state.isShowPicker = payload;
     },
+    setMessageType(
+      state,
+      { payload, }: PayloadAction<ToastType>
+    ) {
+      state.messageType = payload;
+    },
   },
 });
 
 export const {
-  setMessage, setMessageShown, setIsSettingSaved, setIsShowPicker,
+  setMessage,
+  setMessageShown,
+  setIsSettingSaved,
+  setIsShowPicker,
+  setMessageType,
 } = commonReducer.actions;
 export default commonReducer.reducer;

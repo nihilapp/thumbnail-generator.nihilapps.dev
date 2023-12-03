@@ -89,26 +89,24 @@ export function SliderItem({
     setColor([ colors.red, colors.green, colors.blue, ]);
   }, []);
 
-  const style = {
+  const css = {
     sliderDiv: twJoin([
-      'flex items-center gap-2 shrink-0',
+      'flex items-center shrink-0',
     ]),
     numberSpan: twJoin([
-      'font-900 text-[1.5rem] shrink-0 w-[43.86px] text-right text-black-base',
+      'font-900 text-[1.5rem] shrink-0 w-[50px] text-right text-black-base px-1',
     ]),
     numberDiv: twJoin([
-      'flex gap-2 items-center shrink-0',
-      editColor && 'bg-blue-100',
+      'flex gap-2 items-center shrink-0 px-2',
     ]),
     editButton: twJoin([
       'bg-blue-400 hover:bg-blue-500 text-white p-2 shrink-0',
     ]),
     editInput: twJoin([
-      'outline-none font-900 text-[1.5rem] shrink-0 w-[43.86px] text-blue-500 text-right input-outer-spin:appearance-none input-outer-spin:m-0 input-inner-spin:appearance-none input-inner-spin:m-0 bg-white',
-      editColor && 'bg-blue-100',
+      'outline-none font-900 text-[1.5rem] shrink-0 w-[50px] text-blue-500 text-right input-outer-spin:appearance-none input-outer-spin:m-0 input-inner-spin:appearance-none input-inner-spin:m-0 bg-blue-100 px-1',
     ]),
     slider: twJoin([
-      `appearance-none bg-black-100 outline-none h-10 flex-1 shrink-0 overflow-hidden`,
+      `appearance-none bg-black-100 outline-none flex-1 shrink-0 overflow-hidden`,
       'input-slider:appearance-none input-slider:w-10 input-slider:aspect-square input-slider:bg-blue-500 input-slider:cursor-pointer input-slider:shadow-[-520px_0_0_500px] input-slider:shadow-blue-300',
       'input-slider:disabled:bg-black-300 input-slider:disabled:shadow-black-200 disabled:cursor-not-allowed',
     ]),
@@ -116,17 +114,17 @@ export function SliderItem({
 
   return (
     <>
-      <div className={style.sliderDiv}>
+      <div className={css.sliderDiv}>
         <input
           type='range'
           min={0}
           max={255}
           value={color}
           onChange={onChangeObject[colorType]}
-          className={style.slider}
+          className={css.slider}
           disabled={editColor}
         />
-        <div className={style.numberDiv}>
+        <div className={css.numberDiv}>
           {editColor ? (
             <input
               type='number'
@@ -134,15 +132,15 @@ export function SliderItem({
               max={255}
               value={color}
               onChange={onChangeObject[colorType]}
-              className={style.editInput}
+              className={css.editInput}
               ref={inputRef}
             />
           ) : (
-            <span className={style.numberSpan}>{color}</span>
+            <span className={css.numberSpan}>{color}</span>
           )}
           <button
             aria-label='edit'
-            className={style.editButton}
+            className={css.editButton}
             onClick={onEditColor}
           >
             <Icon icon={editColor ? 'mdi:check-bold' : 'material-symbols:edit'} />

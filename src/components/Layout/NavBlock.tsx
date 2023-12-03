@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
+import { useAppDispatch } from '@/src/hooks/rtk';
 import { setSession, setUser } from '@/src/reducers';
 import { Auth } from '@/src/utils/auth';
 import { toast } from 'react-toastify';
 import { Nihil } from '@/src/utils/nihil';
 import { usePathname } from 'next/navigation';
+import { PageLink } from '@/src/components/Common';
 
 interface Props {
   styles?: ClassNameValue
@@ -17,10 +17,6 @@ interface Props {
 
 export function NavBlock({ styles, }: Props) {
   const [ number, setNumber, ] = useState(0);
-
-  const { user: userData, session: sessionData, } = useAppSelector(
-    (state) => state.auth
-  );
 
   const dispatch = useAppDispatch();
   const pathName = usePathname();
@@ -33,7 +29,7 @@ export function NavBlock({ styles, }: Props) {
         switch (event) {
           case 'INITIAL_SESSION':
           case 'SIGNED_IN': {
-            if (userData) {
+            if (session?.user) {
               let userName: string;
 
               if (!session.user.user_metadata.userName) {
@@ -59,16 +55,17 @@ export function NavBlock({ styles, }: Props) {
 
                 dispatch(setSession(newSession));
 
-                console.log('user >> ', userData);
-                console.log('session >> ', sessionData);
+                console.log('user >> ', user);
+                console.log('session >> ', newSession);
 
                 console.log('[세션] 세션 정보 업데이트');
               });
             } else {
               dispatch(setUser(session?.user));
               dispatch(setSession(session));
-              console.log('user >> ', userData);
-              console.log('session >> ', sessionData);
+
+              console.log('user >> ', session?.user);
+              console.log('session >> ', session);
 
               console.log('[세션] 로그인');
             }
@@ -146,18 +143,18 @@ export function NavBlock({ styles, }: Props) {
     };
   }, [ pathName, number, ]);
 
-  const style = {
+  const css = {
     default: twJoin([
-      ``,
+      `flex flex-row`,
       styles,
     ]),
   };
 
   return (
     <>
-      <nav className={style.default}>
-        <Link href='/'>홈</Link>
-        <Link href='/generate'>생성</Link>
+      <nav className={css.default}>
+        <PageLink href='/' as='/' icon='mdi:home'>홈</PageLink>
+        <PageLink href='/generate' as='/generate' icon='mdi:file-image-plus'>생성하기</PageLink>
       </nav>
     </>
   );

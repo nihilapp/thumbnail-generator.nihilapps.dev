@@ -48,7 +48,7 @@ export function BackgroundConfig() {
     []
   );
 
-  const style = {
+  const css = {
     colors: twJoin([
       `flex mt-10`,
     ]),
@@ -78,15 +78,15 @@ export function BackgroundConfig() {
 
   return (
     <>
-      <div className={style.colors}>
+      <div className={css.colors}>
         <button
-          className={style.bgTypeTab('color')}
+          className={css.bgTypeTab('color')}
           onClick={onClickColor}
         >
           단색 배경
         </button>
         <button
-          className={style.bgTypeTab('image')}
+          className={css.bgTypeTab('image')}
           onClick={onClickImage}
         >
           이미지 배경
@@ -94,34 +94,34 @@ export function BackgroundConfig() {
       </div>
 
       {bgType === 'color' && (
-        <div className={style.tabBottom}>
+        <div className={css.tabBottom}>
           <ColorSlider type='background' align='vertical' />
         </div>
       )}
 
       {bgType === 'image' && (
-        <div className={style.tabBottom}>
-          <label htmlFor='image-src' className={style.inputBlock}>
-            <span className={style.label}>이미지 주소</span>
+        <div className={css.tabBottom}>
+          <label htmlFor='image-src' className={css.inputBlock}>
+            <span className={css.label}>이미지 주소</span>
             <input
               type='text'
               id='image-src'
               placeholder='이미지 주소를 입력하세요'
               value={srcValue}
               onChange={onChangeSrc}
-              className={style.input}
+              className={css.input}
             />
           </label>
 
-          <label htmlFor='image-y' className={style.inputBlock}>
-            <span className={style.label}>Y좌표</span>
+          <label htmlFor='image-y' className={css.inputBlock}>
+            <span className={css.label}>Y좌표</span>
             <input
               type='text'
               id='image-y'
               placeholder='원하는 좌표를 입력하세요'
               value={y}
               onChange={onChangeY}
-              className={style.input}
+              className={css.input}
             />
           </label>
         </div>

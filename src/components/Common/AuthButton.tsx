@@ -14,8 +14,8 @@ const scopes = [
 
 export function AuthButton({ styles, }: Props) {
   const onClickGoogle = useCallback(
-    () => {
-      supabase.auth.signInWithOAuth({
+    async () => {
+      await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: '/',
@@ -31,8 +31,8 @@ export function AuthButton({ styles, }: Props) {
   );
 
   const onClickGithub = useCallback(
-    () => {
-      supabase.auth.signInWithOAuth({
+    async () => {
+      await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
           redirectTo: '/',
@@ -42,7 +42,7 @@ export function AuthButton({ styles, }: Props) {
     []
   );
 
-  const style = {
+  const css = {
     buttons: twJoin([
       'flex flex-col gap-2 mt-5 w-1/4',
       styles,
@@ -53,24 +53,22 @@ export function AuthButton({ styles, }: Props) {
   };
 
   return (
-    <>
-      <div className={style.buttons}>
-        <button className={style.button}>
-          구글 로그인 후 일반
-        </button>
-        <button
-          onClick={onClickGoogle}
-          className={style.button}
-        >
-          구글로 로그인하기
-        </button>
-        <button
-          onClick={onClickGithub}
-          className={style.button}
-        >
-          깃허브로 로그인하기
-        </button>
-      </div>
-    </>
+    <div className={css.buttons}>
+      <button className={css.button}>
+        구글 로그인 후 일반
+      </button>
+      <button
+        onClick={onClickGoogle}
+        className={css.button}
+      >
+        구글로 로그인하기
+      </button>
+      <button
+        onClick={onClickGithub}
+        className={css.button}
+      >
+        깃허브로 로그인하기
+      </button>
+    </div>
   );
 }

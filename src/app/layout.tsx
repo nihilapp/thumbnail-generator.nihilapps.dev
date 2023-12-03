@@ -4,7 +4,7 @@ import { Providers } from '../layouts/Providers';
 import { configData } from '../data';
 import { FooterBlock, HeaderBlock, MainBlock } from '../components/Layout';
 
-import '@/src/styles/tailwind.css';
+import '@/src/styles/tailwind.scss';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata: Metadata = {

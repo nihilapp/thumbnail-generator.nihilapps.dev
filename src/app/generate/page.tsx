@@ -4,7 +4,7 @@ import { setMeta } from '@/src/hooks/setMeta';
 import { ThumbnailGenerator } from '@/src/components/Content/generate';
 
 export const metadata: Metadata = setMeta({
-  title: '생성',
+  title: '생성하기',
   url: '/generate',
 });
 

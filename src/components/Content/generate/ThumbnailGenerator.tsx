@@ -27,8 +27,8 @@ export function ThumbnailGenerator({ styles, }: Props) {
     []
   );
 
-  const style = {
-    default: twJoin([
+  const css = {
+    button: twJoin([
       ``,
       styles,
     ]),
@@ -37,7 +37,7 @@ export function ThumbnailGenerator({ styles, }: Props) {
   return (
     <>
       {isSettingSaved ? (
-        <button onClick={onClickReStart}>새로 만들기</button>
+        <button onClick={onClickReStart} className={css.button}>새로 만들기</button>
       ) : (
         <div>
           <Thumbnail />

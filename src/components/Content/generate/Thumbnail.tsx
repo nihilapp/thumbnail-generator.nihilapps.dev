@@ -93,16 +93,16 @@ export function Thumbnail() {
             const settingSave = await supabase.from('thumbnails').insert({
               title,
               subTitle,
-              usersId: user.id,
-              textRed: textColor.red,
-              textGreen: textColor.green,
-              textBlue: textColor.blue,
-              bgRed: bgColor.red,
-              bgGreen: bgColor.green,
-              bgBlue: bgColor.blue,
-              imageSrc: imgSrc,
-              imagePosition: imageY,
-              imageLink: fileUrl.data.publicUrl,
+              user_id: user.id,
+              text_red: textColor.red,
+              text_green: textColor.green,
+              text_blue: textColor.blue,
+              bg_red: bgColor.red,
+              bg_green: bgColor.green,
+              bg_blue: bgColor.blue,
+              bg_src: imgSrc,
+              bg_position: imageY,
+              image_link: fileUrl.data.publicUrl,
             }).select('id');
 
             if (settingSave.data) {
@@ -195,7 +195,7 @@ export function Thumbnail() {
     router.push(`/thumbnails/${rowId}`);
   }, [ rowId, ]);
 
-  const style = {
+  const css = {
     container: twJoin([
       `overflow-hidden w-[1280px] h-[720px]`,
     ]),
@@ -219,7 +219,6 @@ export function Thumbnail() {
     ]),
     closeButton: twJoin([
       `block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]`,
-      !isSave && 'disabled:bg-black-300 disabled:text-black-500 cursor-not-allowed',
     ]),
     frame: {
       width: 'inherit',
@@ -259,7 +258,7 @@ export function Thumbnail() {
       )}
 
       {isClick && (
-        <div className={style.image} ref={imageRef}>
+        <div className={css.image} ref={imageRef}>
           <Image
             src={imageSrc}
             alt='다운로드 이미지'
@@ -280,6 +279,7 @@ export function Thumbnail() {
             {user && (
               <button
                 onClick={onClickManage}
+                className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
               >
                 썸네일 관리
               </button>
@@ -304,16 +304,16 @@ export function Thumbnail() {
       )}
 
       <div className='border-2 border-black-600 mb-5'>
-        <div id='th-container' className={style.container} ref={thRef}>
-          <div id='th-frame' style={style.frame}>
-            <div id='th-titles' className={style.titles}>
-              <h1 id='th-title' className={style.title}>
+        <div id='th-container' className={css.container} ref={thRef}>
+          <div id='th-frame' style={css.frame}>
+            <div id='th-titles' className={css.titles}>
+              <h1 id='th-title' className={css.title}>
                 {title.split('\\n').map((item, index) => (
                 // eslint-disable-next-line react/no-array-index-key
                   <React.Fragment key={`${item}-${index}`}>{item}<br /></React.Fragment>
                 ))}
               </h1>
-              <h2 id='th-sub-title' className={style.subTitle}>{subTitle}</h2>
+              <h2 id='th-sub-title' className={css.subTitle}>{subTitle}</h2>
             </div>
             {bgType === 'image' && imgSrc && (
               <Image
@@ -321,7 +321,7 @@ export function Thumbnail() {
                 alt='이미지'
                 width={1280}
                 height={720}
-                style={style.backImage}
+                style={css.backImage}
                 crossOrigin='anonymous'
               />
             )}
@@ -329,14 +329,14 @@ export function Thumbnail() {
         </div>
       </div>
       {isLoading && (
-        <div className={style.message}>
+        <div className={css.message}>
           <Icon icon='mingcute:loading-fill' className='animate-spin text-[3rem] inline-block' /> 설정에 따라 40초 혹은 그 이상의 시간이 소요될 수 있습니다.
         </div>
       )}
 
-      <div className={style.buttons}>
-        <button onClick={onClickReset} className={style.button}>초기화</button>
-        <button onClick={onClickGenerate} className={style.button}>
+      <div className={css.buttons}>
+        <button onClick={onClickReset} className={css.button}>초기화</button>
+        <button onClick={onClickGenerate} className={css.button}>
           {isLoading ? (
             <Icon icon='mingcute:loading-fill' className='animate-spin' />
           ) : (

@@ -47,7 +47,7 @@ export function SignUpForm({ styles, }: Props) {
     []
   );
 
-  const style = {
+  const css = {
     default: twJoin([
       'mb-5 flex flex-col gap-2 w-1/4',
       styles,
@@ -71,13 +71,13 @@ export function SignUpForm({ styles, }: Props) {
 
   return (
     <>
-      <form className={style.default} onSubmit={handleSubmit(onSubmitForm)} noValidate>
-        <label htmlFor='email' className={style.inputBlock}>
-          <span className={style.label}>이메일</span>
+      <form className={css.default} onSubmit={handleSubmit(onSubmitForm)} noValidate>
+        <label htmlFor='email' className={css.inputBlock}>
+          <span className={css.label}>이메일</span>
           <input
             type='email'
             id='email'
-            className={style.input}
+            className={css.input}
             {...register('email', {
               required: {
                 value: true,
@@ -90,16 +90,16 @@ export function SignUpForm({ styles, }: Props) {
             })}
           />
           {errors.email && (
-            <span className={style.errorMessage}>{errors.email?.message}</span>
+            <span className={css.errorMessage}>{errors.email?.message}</span>
           )}
         </label>
 
-        <label htmlFor='user-name' className={style.inputBlock}>
-          <span className={style.label}>닉네임</span>
+        <label htmlFor='user-name' className={css.inputBlock}>
+          <span className={css.label}>닉네임</span>
           <input
             type='text'
             id='user-name'
-            className={style.input}
+            className={css.input}
             {...register('userName', {
               required: {
                 value: true,
@@ -108,17 +108,17 @@ export function SignUpForm({ styles, }: Props) {
             })}
           />
           {errors.userName && (
-            <span className={style.errorMessage}>{errors.userName?.message}</span>
+            <span className={css.errorMessage}>{errors.userName?.message}</span>
           )}
         </label>
 
-        <label htmlFor='password' className={style.inputBlock}>
-          <span className={style.label}>비밀번호</span>
+        <label htmlFor='password' className={css.inputBlock}>
+          <span className={css.label}>비밀번호</span>
           <input
             type='password'
             id='password'
             autoComplete='off'
-            className={style.input}
+            className={css.input}
             {...register('password', {
               required: {
                 value: true,
@@ -131,17 +131,17 @@ export function SignUpForm({ styles, }: Props) {
             })}
           />
           {errors.password && (
-            <span className={style.errorMessage}>{errors.password?.message}</span>
+            <span className={css.errorMessage}>{errors.password?.message}</span>
           )}
         </label>
 
-        <label htmlFor='password-check' className={style.inputBlock}>
-          <span className={style.label}>비밀번호 확인</span>
+        <label htmlFor='password-check' className={css.inputBlock}>
+          <span className={css.label}>비밀번호 확인</span>
           <input
             type='password'
             id='password-check'
             autoComplete='off'
-            className={style.input}
+            className={css.input}
             {...register('passwordCheck', {
               required: {
                 value: true,
@@ -159,11 +159,11 @@ export function SignUpForm({ styles, }: Props) {
             })}
           />
           {errors.passwordCheck && (
-            <span className={style.errorMessage}>{errors.passwordCheck?.message}</span>
+            <span className={css.errorMessage}>{errors.passwordCheck?.message}</span>
           )}
         </label>
 
-        <button className={style.button}>회원가입</button>
+        <button className={css.button}>회원가입</button>
       </form>
 
       <div className='border-t border-black-300'>

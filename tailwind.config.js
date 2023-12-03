@@ -195,7 +195,24 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/typography'),
-    plugin(({ addVariant, }) => {
+    plugin(({ addVariant, addUtilities, }) => {
+      // addUtilities
+      addUtilities({
+        '.a11y-hidden': {
+          overflow: 'hidden',
+          position: 'absolute',
+          clip: 'rect(0, 0, 0, 0)',
+          'clip-path': 'circle(0)',
+          width: 1,
+          height: 1,
+          margin: -1,
+          border: 0,
+          padding: 0,
+          whiteSpace: 'nowrap',
+        },
+      });
+
+      // addVariant
       addVariant('input-slider', [ '&::-webkit-slider-thumb', ]);
       addVariant('input-outer-spin', [ '&::-webkit-outer-spin-button', ]);
       addVariant('input-inner-spin', [ '&::-webkit-inner-spin-button', ]);

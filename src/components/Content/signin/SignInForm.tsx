@@ -7,7 +7,7 @@ import { DevTool } from '@hookform/devtools';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/hooks/rtk';
-import { setMessage, setMessageShown } from '@/src/reducers';
+import { setMessage, setMessageShown, setMessageType } from '@/src/reducers';
 import { supabase } from '@/src/utils/supabase/client';
 import { AuthButton } from '../../Common';
 
@@ -35,6 +35,7 @@ export function SignInForm({ styles, }: Props) {
           if (response.error) {
             toast.error('로그인 실패. 이메일 혹은 비밀번호를 확인해주세요.');
           } else {
+            dispatch(setMessageType('success'));
             dispatch(setMessageShown(false));
             dispatch(setMessage('로그인 되었습니다.'));
             router.push('/');
@@ -44,7 +45,7 @@ export function SignInForm({ styles, }: Props) {
     []
   );
 
-  const style = {
+  const css = {
     default: twJoin([
       `space-y-2`,
       styles,
@@ -62,13 +63,13 @@ export function SignInForm({ styles, }: Props) {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmitForm)} noValidate className={style.default}>
-        <label htmlFor='email' className={style.inputBlock}>
-          <span className={style.label}>이메일</span>
+      <form onSubmit={handleSubmit(onSubmitForm)} noValidate className={css.default}>
+        <label htmlFor='email' className={css.inputBlock}>
+          <span className={css.label}>이메일</span>
           <input
             type='email'
             id='email'
-            className={style.input}
+            className={css.input}
             {...register('email', {
               required: {
                 value: true,
@@ -85,13 +86,13 @@ export function SignInForm({ styles, }: Props) {
           )}
         </label>
 
-        <label htmlFor='password' className={style.inputBlock}>
-          <span className={style.label}>비밀번호</span>
+        <label htmlFor='password' className={css.inputBlock}>
+          <span className={css.label}>비밀번호</span>
           <input
             type='password'
             id='password'
             autoComplete='off'
-            className={style.input}
+            className={css.input}
             {...register('password', {
               required: {
                 value: true,

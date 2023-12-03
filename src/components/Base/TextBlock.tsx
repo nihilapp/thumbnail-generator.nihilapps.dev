@@ -2,21 +2,21 @@ import React from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 
 interface Props {
-  styles?: ClassNameValue;
   children: React.ReactNode;
+  styles?: ClassNameValue;
 }
 
-export function MainBlock({ styles, children, }: Props) {
+export function TextBlock({ children, styles, }: Props) {
   const css = {
     default: twJoin([
-      `w-[1284px] mx-auto`,
+      `mt-4 text-justify text-[1.1rem] text-black-base font-500`,
       styles,
     ]),
   };
 
   return (
     <>
-      <main className={css.default}>{children}</main>
+      <p className={css.default}>{children}</p>
     </>
   );
 }

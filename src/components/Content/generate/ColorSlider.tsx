@@ -22,9 +22,8 @@ export function ColorSlider({ align = 'vertical', type = 'background', }: Props)
       : bgColor;
   }, [ textColor, bgColor, ]);
 
-  const style = {
+  const css = {
     container: twJoin([
-      'gap-2',
       align === 'vertical' && 'flex w-full',
       align === 'horizontal' && `flex flex-col w-full`,
     ]),
@@ -40,13 +39,13 @@ export function ColorSlider({ align = 'vertical', type = 'background', }: Props)
 
   return (
     <>
-      <div className={style.container}>
-        <div className={style.colorSliders}>
+      <div className={css.container}>
+        <div className={css.colorSliders}>
           <SliderItem color={color.red} type={type} colors={color} colorType='red' />
           <SliderItem color={color.green} type={type} colors={color} colorType='green' />
           <SliderItem color={color.blue} type={type} colors={color} colorType='blue' />
         </div>
-        <div className={style.colorView} style={{ backgroundColor: Nihil.toRGBHex(color), }} />
+        <div className={css.colorView} style={{ backgroundColor: Nihil.toRGBHex(color), }} />
       </div>
     </>
   );

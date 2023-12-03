@@ -20,7 +20,7 @@ export function HeaderBlock({ styles, }: Props) {
       styles,
     ]),
     title: twJoin([
-      `p-3 bg-black-700`,
+      `p-3 py-4 bg-black-700`,
     ]),
     logo: twJoin([
       `w-[300px] h-auto`,
@@ -37,7 +37,7 @@ export function HeaderBlock({ styles, }: Props) {
           <PageLink
             href='/'
             styles={[
-              `bg-transparent border-none hover:bg-transparent px-0 w-[300px] py-0`,
+              `!bg-transparent border-none hover:bg-transparent !px-0 !w-[300px] !py-0`,
             ]}
           >
             <Image

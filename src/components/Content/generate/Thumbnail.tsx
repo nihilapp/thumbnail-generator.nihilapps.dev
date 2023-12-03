@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import {
-  initState, setIsSettingSaved, setIsShowPicker
+  initState, setIsShowPicker
 } from '@/src/reducers';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState
@@ -72,6 +72,12 @@ export function Thumbnail() {
       }).then((canvas) => {
         setImageSrc(canvas.toDataURL());
         canvas.toBlob((blob) => {
+          if (!user || !session) {
+            setIsLoading(false);
+            toast.success('썸네일 이미지가 생성되었습니다.');
+            return;
+          }
+
           const file = new File([ blob, ], 'image.png', {
             type: 'image/png',
           });
@@ -149,13 +155,6 @@ export function Thumbnail() {
       link.click();
 
       document.body.removeChild(link);
-
-      if (!user) {
-        console.log('로그인 안했을 경우');
-        dispatch(setIsSettingSaved(true));
-      } else {
-        setIsSave(true);
-      }
     },
     [ imageSrc, title, user, ]
   );
@@ -244,13 +243,6 @@ export function Thumbnail() {
 
   return (
     <>
-      {/* 열기 버튼을 클릭하면 피커가 로드되게 구성 */}
-      {/* 피커가 로드되면 구글 드라이브에 있는 최상위 폴더들을 리스팅해줌. */}
-      {/* 최대 50개를 가져오고 더 있다면 추가로 가져옴. */}
-      {/* 폴더는 5열로 보여짐. */}
-      {/* 폴더를 클릭하면 그 폴더에 이미지 파일을 업로드 할 수 있음. */}
-      {/* 새로운 폴더를 만들 수도 있음. */}
-      {/* 오로지 최상위 폴더만 보임. */}
       {isShowPicker && (
         <>
           <GoogleDrivePicker />

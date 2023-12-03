@@ -44,12 +44,12 @@ export function HomeDocument({ styles, }: Props) {
           썸네일 생성기는 말 그대로 썸네일을 생성하는 프로그램입니다. 포토샵만큼은 못하겠지만 간단한 썸네일 정도는 만들 수 있게끔 제공하려고 합니다. 썸네일 생성기는 PC 화면에 특화되어 있습니다. 기능의 특성상 모바일은 지원하지 않는 점 참고하시길 바랍니다. 하지만 추후 업데이트를 통해서 모바일에서도 썸네일을 생성할 수 있도록 제공할 예정입니다.
         </TextBlock>
         <TextBlock styles='mb-4'>
-          썸네일 생성기는 원하는 텍스트와 원하는 배경 색상, 혹은 이미지를 선택해서 이미지화 하고 파일을 제공하는 과정을 통해 썸네일을 생성합니다. 현재는 생성할 수 있는 썸네일의 사이즈가 1280*720으로 고정되어있습니다. 이 역시 업데이트를 통해서 자유롭게 설정할 수 있도록 개선할 예정입니다.
+          썸네일 생성기는 원하는 텍스트와 원하는 배경 색상, 혹은 이미지를 선택해서 이미지화 하고 파일을 제공하는 과정을 통해 썸네일을 생성합니다. 현재는 생성할 수 있는 썸네일의 사이즈가 1280×720으로 고정되어있습니다. 이 역시 업데이트를 통해서 자유롭게 설정할 수 있도록 개선할 예정입니다.
         </TextBlock>
 
         <Heading level='h2' no={2}>사용방법</Heading>
         <TextBlock styles='mb-4'>
-          썸네일 생성기는 아래의 방법으로 이용가능 하십니다.
+          썸네일 생성기는 아래의 가이드에 따라 이용할 수 있습니다.
         </TextBlock>
 
         <Heading level='h3' no={2.1}>회원과 비회원에 따른 기능 분리</Heading>
@@ -67,15 +67,15 @@ export function HomeDocument({ styles, }: Props) {
 
           <thead className='border-b border-black-200'>
             <tr className='divide-x divide-black-200'>
-              <th aria-label='empty' className='w-1/3 p-2' />
-              <th className='w-1/3 p-2'>회원</th>
-              <th className='w-1/3 p-2'>비회원</th>
+              <th aria-label='empty' className='w-1/3 p-2 bg-black-100' />
+              <th className='w-1/3 p-2 bg-black-100'>회원</th>
+              <th className='w-1/3 p-2 bg-black-100'>비회원</th>
             </tr>
           </thead>
 
           <tbody className='divide-y divide-black-200'>
             <tr className='divide-x divide-black-200'>
-              <th scope='row' className='p-2'>이미지 저장</th>
+              <th scope='row' className='p-2 bg-black-100'>이미지 저장</th>
               <td aria-label='ok' className='p-2'>
                 <OkIcon styles='mx-auto' />
               </td>
@@ -84,7 +84,7 @@ export function HomeDocument({ styles, }: Props) {
               </td>
             </tr>
             <tr className='divide-x divide-black-200'>
-              <th scope='row' className='p-2'>구글드라이브 연동</th>
+              <th scope='row' className='p-2 bg-black-100'>구글드라이브 연동</th>
               <td aria-label='ok' className='p-2'>
                 <OkIcon styles='mx-auto' />
               </td>
@@ -93,7 +93,7 @@ export function HomeDocument({ styles, }: Props) {
               </td>
             </tr>
             <tr className='divide-x divide-black-200'>
-              <th scope='row' className='p-2'>DB 연동</th>
+              <th scope='row' className='p-2 bg-black-100'>DB 연동</th>
               <td aria-label='ok' className='p-2'>
                 <OkIcon styles='mx-auto' />
               </td>

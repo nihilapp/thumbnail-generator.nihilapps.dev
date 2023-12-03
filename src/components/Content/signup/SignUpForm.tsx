@@ -7,6 +7,7 @@ import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { Heading } from '@/src/components/Base';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -49,35 +50,41 @@ export function SignUpForm({ styles, }: Props) {
 
   const css = {
     default: twJoin([
-      'mb-5 flex flex-col gap-2 w-1/4',
+      `mb-5 flex flex-col gap-5 w-2/4 mx-auto text-black-base`,
       styles,
     ]),
     inputBlock: twJoin([
-      'flex flex-col gap-1',
+      `flex flex-col gap-1 text-[1.1rem]`,
     ]),
     label: twJoin([
-      'font-700',
+      `font-700 text-[1.2rem]`,
     ]),
     input: twJoin([
-      'bg-black-100 focus:bg-blue-100 outline-none p-2 border border-black-400 focus:border-blue-400',
+      `p-3 bg-black-100 border-b-[3px] border-black-100 focus:border-blue-500 outline-none transition-colors duration-200`,
     ]),
     button: twJoin([
-      'p-2 bg-black-200 hover:bg-blue-200 border border-black-400 hover:border-blue-400',
+      `p-3 bg-blue-400 hover:bg-blue-600 text-white text-[1.2rem] mt-5`,
     ]),
     errorMessage: twJoin([
-      'text-red-500 font-700 italic',
+      `text-red-500 font-700 italic`,
     ]),
   };
 
   return (
     <>
+      <Heading level='h2' styles='text-center mb-[50px] w-2/4 mx-auto'>
+        회원가입
+      </Heading>
       <form className={css.default} onSubmit={handleSubmit(onSubmitForm)} noValidate>
         <label htmlFor='email' className={css.inputBlock}>
           <span className={css.label}>이메일</span>
           <input
             type='email'
             id='email'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.email && `border-red-500`,
+            ])}
             {...register('email', {
               required: {
                 value: true,
@@ -99,7 +106,10 @@ export function SignUpForm({ styles, }: Props) {
           <input
             type='text'
             id='user-name'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.userName && `border-red-500`,
+            ])}
             {...register('userName', {
               required: {
                 value: true,
@@ -118,7 +128,10 @@ export function SignUpForm({ styles, }: Props) {
             type='password'
             id='password'
             autoComplete='off'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.password && `border-red-500`,
+            ])}
             {...register('password', {
               required: {
                 value: true,
@@ -141,7 +154,10 @@ export function SignUpForm({ styles, }: Props) {
             type='password'
             id='password-check'
             autoComplete='off'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.passwordCheck && `border-red-500`,
+            ])}
             {...register('passwordCheck', {
               required: {
                 value: true,
@@ -166,9 +182,7 @@ export function SignUpForm({ styles, }: Props) {
         <button className={css.button}>회원가입</button>
       </form>
 
-      <div className='border-t border-black-300'>
-        <AuthButton />
-      </div>
+      <AuthButton />
 
       {process.env.NODE_ENV === 'development' && (
         <DevTool control={control} placement='top-right' />

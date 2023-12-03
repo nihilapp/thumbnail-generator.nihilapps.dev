@@ -24,14 +24,14 @@ export function FooterBlock({ styles, }: Props) {
   }, []);
 
   const onMouseEnter = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
+    () => {
       setIsHover(true);
     },
     []
   );
 
   const onMouseLeave = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
+    () => {
       setIsHover(false);
     },
     []

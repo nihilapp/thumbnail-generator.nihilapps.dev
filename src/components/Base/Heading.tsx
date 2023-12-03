@@ -2,7 +2,7 @@ import React from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 
 interface Props {
-  no: number;
+  no?: number;
   level?: ('h2' | 'h3' | 'h4' | 'h5' | 'h6');
   children: React.ReactNode;
   styles?: ClassNameValue;
@@ -32,7 +32,9 @@ export function Heading({
   return (
     <>
       <Level className={css.default}>
-        <span className={css.no}>{no}.</span>
+        {no && (
+          <span className={css.no}>{no}.</span>
+        )}
         <span className={css.body}>{children}</span>
       </Level>
     </>

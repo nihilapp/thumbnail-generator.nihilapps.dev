@@ -60,7 +60,7 @@ export function SignUpForm({ styles, }: Props) {
       `font-700 text-[1.2rem]`,
     ]),
     input: twJoin([
-      `p-3 bg-black-100 border-b-[3px] border-black-100 focus:border-blue-500 outline-none transition-colors duration-200`,
+      `p-3 bg-black-100 border-b-[3px] border-black-100 focus:border-blue-500 outline-none transition-colors duration-200 font-500`,
     ]),
     button: twJoin([
       `p-3 bg-blue-400 hover:bg-blue-600 text-white text-[1.2rem] mt-5`,

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/src/hooks/rtk';
 import { setMessage, setMessageShown, setMessageType } from '@/src/reducers';
 import { supabase } from '@/src/utils/supabase/client';
+import { Heading } from '@/src/components/Base';
 import { AuthButton } from '../../Common';
 
 interface Props {
@@ -47,22 +48,31 @@ export function SignInForm({ styles, }: Props) {
 
   const css = {
     default: twJoin([
-      `space-y-2`,
+      `mb-5 flex flex-col gap-5 w-2/4 mx-auto text-black-base`,
       styles,
     ]),
-    input: twJoin([
-      `bg-black-100 p-2 border border-black-400 focus:bg-blue-100 focus:border-blue-400 outline-none`,
+    inputBlock: twJoin([
+      `flex flex-col gap-1 text-[1.1rem]`,
     ]),
     label: twJoin([
-      `block mb-1 font-500`,
+      `font-700 text-[1.2rem]`,
     ]),
-    inputBlock: twJoin([
-      `block`,
+    input: twJoin([
+      `p-3 bg-black-100 border-b-[3px] border-black-100 focus:border-blue-500 outline-none transition-colors duration-200 font-500`,
+    ]),
+    button: twJoin([
+      `p-3 bg-blue-400 hover:bg-blue-600 text-white text-[1.2rem] mt-5`,
+    ]),
+    errorMessage: twJoin([
+      `text-red-500 font-700 italic`,
     ]),
   };
 
   return (
     <>
+      <Heading level='h2' styles='text-center mb-[50px] w-2/4 mx-auto'>
+        로그인
+      </Heading>
       <form onSubmit={handleSubmit(onSubmitForm)} noValidate className={css.default}>
         <label htmlFor='email' className={css.inputBlock}>
           <span className={css.label}>이메일</span>
@@ -82,7 +92,7 @@ export function SignInForm({ styles, }: Props) {
             })}
           />
           {errors.email && (
-            <span>{errors.email?.message}</span>
+            <span className={css.errorMessage}>{errors.email?.message}</span>
           )}
         </label>
 
@@ -105,15 +115,13 @@ export function SignInForm({ styles, }: Props) {
             })}
           />
           {errors.password && (
-            <span>{errors.password?.message}</span>
+            <span className={css.errorMessage}>{errors.password?.message}</span>
           )}
         </label>
-        <button>로그인</button>
+        <button className={css.button}>로그인</button>
       </form>
 
-      <div className='border-t border-black-300'>
-        <AuthButton />
-      </div>
+      <AuthButton />
 
       {process.env.NODE_ENV === 'development' && (
         <DevTool control={control} placement='top-right' />

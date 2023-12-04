@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
 import { setSubTitle, setTitle } from '@/src/reducers';
 import React, { ChangeEvent, useCallback } from 'react';
 import { twJoin } from 'tailwind-merge';
+import { Heading } from '@/src/components/Base';
 import { ColorSlider } from './ColorSlider';
 
 export function TextConfig() {
@@ -29,19 +30,19 @@ export function TextConfig() {
 
   const css = {
     inputs: twJoin([
-      `space-y-2 p-5 bg-white border-2 border-t-0 border-black-600`,
+      `space-y-2 p-5 bg-white border-2 border-black-600`,
     ]),
     inputBlock: twJoin([
-      `flex flex-col gap-1`,
+      `flex flex-col gap-1 text-[1.1rem]`,
     ]),
     input: twJoin([
-      `p-2 outline-none text-normal bg-black-100 text-black-base placeholder:text-black-300 border-b-[2px] border-transparent transition-colors duration-200 focus:border-blue-500`,
+      `p-3 outline-none text-normal bg-black-100 text-black-base placeholder:text-black-300 border-b-[3px] border-black-100 transition-colors duration-200 focus:border-blue-500 font-500`,
     ]),
     label: twJoin([
-      `font-semibold text-normal text-black-base`,
+      `font-700 text-[1.2rem] text-black-base`,
     ]),
     h2: twJoin([
-      `text-h2 text-white font-black p-3 bg-black-600`,
+      `text-h2 text-white font-black p-3 bg-black-600 leading-none`,
     ]),
   };
 

@@ -100,7 +100,7 @@ export function SliderItem({
       'flex gap-2 items-center shrink-0 px-2',
     ]),
     editButton: twJoin([
-      'bg-blue-400 hover:bg-blue-500 text-white p-2 shrink-0',
+      'bg-blue-400 hover:bg-blue-600 text-white p-2 shrink-0',
     ]),
     editInput: twJoin([
       'outline-none font-900 text-[1.5rem] shrink-0 w-[50px] text-blue-500 text-right input-outer-spin:appearance-none input-outer-spin:m-0 input-inner-spin:appearance-none input-inner-spin:m-0 bg-blue-100 px-1',

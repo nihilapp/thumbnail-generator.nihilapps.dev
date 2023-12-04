@@ -79,7 +79,10 @@ export function SignInForm({ styles, }: Props) {
           <input
             type='email'
             id='email'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.email && `border-red-500`,
+            ])}
             {...register('email', {
               required: {
                 value: true,
@@ -102,7 +105,10 @@ export function SignInForm({ styles, }: Props) {
             type='password'
             id='password'
             autoComplete='off'
-            className={css.input}
+            className={twJoin([
+              css.input,
+              errors.password && `border-red-500`,
+            ])}
             {...register('password', {
               required: {
                 value: true,

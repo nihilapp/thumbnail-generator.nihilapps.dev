@@ -40,7 +40,7 @@ export function UserNav({ styles, }: Props) {
       styles,
     ]),
     signOut: twJoin([
-      `p-2 px-4 flex flex-col items-center justify-center border-l border-b-0 border-t-0 border-black-200 hover:border-black-400 hover:bg-black-400 bg-white text-black-base hover:text-white`,
+      `p-2 px-4 flex flex-col items-center justify-center border-l border-b-0 border-t-0 border-black-200 hover:border-black-400 hover:bg-black-400 bg-white text-black-base hover:text-white w-[120px] font-500`,
     ]),
   };
 

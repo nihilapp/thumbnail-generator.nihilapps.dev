@@ -1,12 +1,11 @@
 'use client';
 
-import { Color } from '@/src/reducers';
 import { Icon } from '@iconify/react';
 import React, {
   ChangeEvent, useCallback, useEffect, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
-import { setBgColor, setTextColor } from '@/src/store/thumbnail.store';
+import { Color, setBgColor, setTextColor } from '@/src/store/thumbnail.store';
 
 interface Props {
   colorType: string;

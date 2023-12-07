@@ -36,15 +36,28 @@ export function GoogleDrivePicker({ styles, }: Props) {
     mode: 'all',
   });
 
-  const createFolder = useCreateFolder();
-  const uploadImage = useUploadImage();
+  const {
+    createFolderData,
+    createFolderIsSuccess,
+    createFolderIsError,
+    createFolderError,
+    createFolderMutate,
+  } = useCreateFolder();
+
+  const {
+    uploadImageData,
+    uploadImageIsSuccess,
+    uploadImageIsError,
+    uploadImageError,
+    uploadImageMutate,
+  } = useUploadImage();
 
   // const [ createFolder, createResult, ] = useCreateFolderMutation();
   // const [ uploadImage, uploadResult, ] = useUploadImageMutation();
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
     (data) => {
-      createFolder.mutate({
+      createFolderMutate({
         folderName: data.newFolderName,
       });
     },

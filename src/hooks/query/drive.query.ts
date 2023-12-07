@@ -54,11 +54,11 @@ export const useCreateFolder = () => {
   });
 
   return {
-    data,
-    isSuccess,
-    isError,
-    error,
-    mutate,
+    createFolderData: data,
+    createFolderIsSuccess: isSuccess,
+    createFolderIsError: isError,
+    createFolderError: error,
+    createFolderMutate: mutate,
   };
 };
 
@@ -78,10 +78,10 @@ export const useUploadImage = () => {
   });
 
   return {
-    data,
-    isSuccess,
-    isError,
-    error,
-    mutate,
+    uploadImageData: data,
+    uploadImageIsSuccess: isSuccess,
+    uploadImageIsError: isError,
+    uploadImageError: error,
+    uploadImageMutate: mutate,
   };
 };

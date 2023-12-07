@@ -2,10 +2,9 @@
 
 import React, { useEffect } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setMessage, setMessageShown } from '@/src/reducers';
 import { toast } from 'react-toastify';
 import { Heading, TextBlock } from '@/src/components/Base';
+import { commonStore, setMessage, setMessageShown } from '@/src/store/common.store';
 import { NoIcon, OkIcon } from '../../Common';
 
 interface Props {
@@ -13,19 +12,15 @@ interface Props {
 }
 
 export function HomeDocument({ styles, }: Props) {
-  const { message, messageShown, messageType, } = useAppSelector(
-    (state) => state.common
-  );
-
-  const dispatch = useAppDispatch();
+  const { message, messageShown, messageType, } = commonStore();
 
   useEffect(() => {
     if (message && !messageShown) {
       toast(message, {
         type: messageType,
       });
-      dispatch(setMessage(''));
-      dispatch(setMessageShown(true));
+      setMessage('');
+      setMessageShown(true);
     }
   }, [ message, messageShown, ]);
 

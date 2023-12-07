@@ -3,13 +3,14 @@
 import React, { useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
-import { useAppDispatch } from '@/src/hooks/rtk';
-import { setSession, setUser } from '@/src/reducers';
 import { Auth } from '@/src/utils/auth';
 import { toast } from 'react-toastify';
 import { Nihil } from '@/src/utils/nihil';
 import { usePathname } from 'next/navigation';
 import { PageLink } from '@/src/components/Common';
+import {
+  ProviderType, setProvider, setSession, setUser
+} from '@/src/store/auth.store';
 
 interface Props {
   styles?: ClassNameValue
@@ -18,7 +19,6 @@ interface Props {
 export function NavBlock({ styles, }: Props) {
   const [ number, setNumber, ] = useState(0);
 
-  const dispatch = useAppDispatch();
   const pathName = usePathname();
 
   useEffect(() => {
@@ -48,12 +48,12 @@ export function NavBlock({ styles, }: Props) {
                   userName,
                 },
               }).then(({ data: { user, }, }) => {
-                dispatch(setUser(user));
+                setUser(user);
 
                 const newSession = { ...session, };
                 newSession.user = { ...user, };
 
-                dispatch(setSession(newSession));
+                setSession(newSession);
 
                 console.log('user >> ', user);
                 console.log('session >> ', newSession);
@@ -61,8 +61,9 @@ export function NavBlock({ styles, }: Props) {
                 console.log('[세션] 세션 정보 업데이트');
               });
             } else {
-              dispatch(setUser(session?.user));
-              dispatch(setSession(session));
+              setUser(session?.user);
+              setSession(session);
+              setProvider(session?.user.app_metadata.provider as ProviderType);
 
               console.log('user >> ', session?.user);
               console.log('session >> ', session);
@@ -72,8 +73,9 @@ export function NavBlock({ styles, }: Props) {
             return;
           }
           case 'SIGNED_OUT':
-            dispatch(setUser(null));
-            dispatch(setSession(null));
+            setUser(null);
+            setSession(null);
+            setProvider('');
             console.log('[세션] 로그아웃');
             break;
           case 'USER_UPDATED': {
@@ -97,20 +99,20 @@ export function NavBlock({ styles, }: Props) {
 
                   const { session: newSession, user: newUser, } = data;
 
-                  dispatch(setSession(newSession));
-                  dispatch(setUser(newUser));
+                  setSession(newSession);
+                  setUser(newUser);
 
                   switch (session.user.app_metadata.provider) {
                     case 'google':
                       Auth.GoogleRefreshToken().then(async (response) => {
                         toast.success(response.message);
 
-                        dispatch(setUser(response.newUser));
+                        setUser(response.newUser);
 
                         const newSession = { ...session, };
                         newSession.user = { ...response.newUser, };
 
-                        dispatch(setSession(newSession));
+                        setSession(newSession);
                         console.log('[구글] 액세스 토큰 재발급');
                       });
                       break;

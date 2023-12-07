@@ -1,8 +1,5 @@
 'use client';
 
-import { useCreateFolderMutation, useGetFoldersQuery, useUploadImageMutation } from '@/src/apis/drive.api';
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setIsShowPicker } from '@/src/reducers';
 import { Nihil } from '@/src/utils/nihil';
 import { supabase } from '@/src/utils/supabase/client';
 import { Icon } from '@iconify/react';
@@ -11,6 +8,10 @@ import React, {
 } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
+import { thumbnailStore } from '@/src/store/thumbnail.store';
+import { authStore } from '@/src/store/auth.store';
+import { useCreateFolder, useGetFolders, useUploadImage } from '@/src/hooks/query';
+import { setIsShowPicker } from '@/src/store/common.store';
 
 interface Props {
   styles?: ClassNameValue;
@@ -24,34 +25,26 @@ export function GoogleDrivePicker({ styles, }: Props) {
   const [ folderId, setFolderId, ] = useState('');
   const [ folderName, setFolderName, ] = useState('');
 
-  const { title, imageFileSrc, } = useAppSelector(
-    (state) => state.thumbnail
-  );
-
-  console.log(imageFileSrc);
-
-  const { session, } = useAppSelector(
-    (state) => state.auth
-  );
+  const { title, imageFileSrc, } = thumbnailStore();
+  const { session, user, } = authStore();
 
   const {
-    data: folders, isSuccess, isLoading, isFetching,
-  } = useGetFoldersQuery(null, {
-    pollingInterval: 600 * 1000,
-  });
+    foldersData, foldersIsLoading, foldersIsFetching, foldersIsSuccess,
+  } = useGetFolders();
 
   const { register, handleSubmit, } = useForm<Inputs>({
     mode: 'all',
   });
 
-  const [ createFolder, createResult, ] = useCreateFolderMutation();
-  const [ uploadImage, uploadResult, ] = useUploadImageMutation();
+  const createFolder = useCreateFolder();
+  const uploadImage = useUploadImage();
 
-  const dispatch = useAppDispatch();
+  // const [ createFolder, createResult, ] = useCreateFolderMutation();
+  // const [ uploadImage, uploadResult, ] = useUploadImageMutation();
 
   const onSubmitForm: SubmitHandler<Inputs> = useCallback(
     (data) => {
-      createFolder({
+      createFolder.mutate({
         folderName: data.newFolderName,
       });
     },
@@ -60,7 +53,7 @@ export function GoogleDrivePicker({ styles, }: Props) {
 
   const onClickHidePicker = useCallback(
     () => {
-      dispatch(setIsShowPicker(false));
+      setIsShowPicker(false);
     },
     []
   );
@@ -68,43 +61,43 @@ export function GoogleDrivePicker({ styles, }: Props) {
   const onClickSelectFolder = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       const { id, } = event.currentTarget.dataset;
-      console.log('folders >> ', folders);
+      console.log('folders >> ', foldersData);
 
-      const folder = folders.files.find((item) => item.id === id);
+      const folder = foldersData.response.files.find((item) => item.id === id);
 
       setFolderId(id);
       setFolderName(folder.name);
     },
-    [ folders, ]
+    [ foldersData, ]
   );
 
   const onClickUploadImage = useCallback(
     async () => {
-      const file = new File([ imageFileSrc, ], 'image.png', {
-        type: 'image/png',
-      });
-
-      console.log(file);
-      const { data: { user, }, } = await supabase.auth.getUser();
-
-      const folder = user.id;
-      const nowDate = Nihil.date().format();
-
-      supabase.storage.from('thumbnails').upload(
-        `${folder}/${nowDate}.png`,
-        file,
-        {
-          contentType: 'image/png',
-        }
-      ).then(async (response) => {
-        uploadImage({
-          folderId,
-          imageFile: response.data.path,
-          imageName: title,
-        }).then((uploadResponse) => {
-          console.log(uploadResponse);
-        });
-      });
+      //     const file = new File([ imageFileSrc, ], 'image.png', {
+      //       type: 'image/png',
+      //     });
+      //
+      //     console.log(file);
+      //     const { data: { user, }, } = await supabase.auth.getUser();
+      //
+      //     const folder = user.id;
+      //     const nowDate = Nihil.date().format();
+      //
+      //     supabase.storage.from('thumbnails').upload(
+      //       `${folder}/${nowDate}.png`,
+      //       file,
+      //       {
+      //         contentType: 'image/png',
+      //       }
+      //     ).then(async (response) => {
+      //       uploadImage({
+      //         folderId,
+      //         imageFile: response.data.path,
+      //         imageName: title,
+      //       }).then((uploadResponse) => {
+      //         console.log(uploadResponse);
+      //       });
+      //     });
     },
     [ folderId, title, imageFileSrc, ]
   );
@@ -144,22 +137,22 @@ export function GoogleDrivePicker({ styles, }: Props) {
     <>
       <div className={css.default}>
         <h2 className={css.h2}>
-          {(isLoading || isFetching) && (
+          {(foldersIsLoading || foldersIsFetching) && (
             <>가져오는 중...</>
           )}
-          {isSuccess && (
-            <>발견된 폴더 총 {folders.files.length}개</>
+          {foldersIsSuccess && (
+            <>발견된 폴더 총 {foldersData.response.files.length}개</>
           )}
         </h2>
-        {(isLoading || isFetching) && (
+        {(foldersIsLoading || foldersIsFetching) && (
           <div className={css.loadingIcon}>
             <Icon icon='mingcute:loading-fill' className='animate-spin' />
           </div>
         )}
-        {isSuccess && (
+        {foldersIsSuccess && (
           <>
             <div className={css.folders}>
-              {folders.files.map((item) => (
+              {foldersData.response.files.map((item) => (
                 <div
                   key={Nihil.uuid(0)}
                   data-id={item.id}

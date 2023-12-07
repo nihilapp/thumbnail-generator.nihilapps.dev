@@ -87,6 +87,7 @@ export function AuthButton({ styles, }: Props) {
         />
         <span className={css.text}>구글로 로그인하기</span>
       </button>
+      <p className='text-blue-500 font-600 text-center mb-2 text-[1.1rem]'>구글로 로그인하면 드라이브에 썸네일을 저장할 수 있어요.</p>
       <button
         onClick={onClickGithub}
         className={css.github}

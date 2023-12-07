@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { useAppSelector } from '@/src/hooks/rtk';
 import { twJoin } from 'tailwind-merge';
 import { Nihil } from '@/src/utils/nihil';
+import { thumbnailStore } from '@/src/store/thumbnail.store';
 import { SliderItem } from './SliderItem';
 
 interface Props {
@@ -12,9 +12,7 @@ interface Props {
 }
 
 export function ColorSlider({ align = 'vertical', type = 'background', }: Props) {
-  const { textColor, bgColor, } = useAppSelector(
-    (state) => state.thumbnail
-  );
+  const { textColor, bgColor, } = thumbnailStore();
 
   const color = useMemo(() => {
     return type === 'text'

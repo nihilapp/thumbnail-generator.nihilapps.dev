@@ -1,29 +1,23 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setSubTitle, setTitle } from '@/src/reducers';
 import React, { ChangeEvent, useCallback } from 'react';
 import { twJoin } from 'tailwind-merge';
-import { Heading } from '@/src/components/Base';
+import { setSubTitle, setTitle, thumbnailStore } from '@/src/store/thumbnail.store';
 import { ColorSlider } from './ColorSlider';
 
 export function TextConfig() {
-  const { title, subTitle, } = useAppSelector(
-    (state) => state.thumbnail
-  );
-
-  const dispatch = useAppDispatch();
+  const { title, subTitle, } = thumbnailStore();
 
   const onChangeTitle = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      dispatch(setTitle(event.target.value));
+      setTitle(event.target.value);
     },
     []
   );
 
   const onChangeSubTitle = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      dispatch(setSubTitle(event.target.value));
+      setSubTitle(event.target.value);
     },
     []
   );

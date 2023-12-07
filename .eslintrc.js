@@ -72,6 +72,7 @@ module.exports = {
     'no-useless-return': 'off',
     'lines-between-class-members': 'off',
     'arrow-body-style': 'off',
+    camelcase: 'off',
 
     // 임포트 규칙
     'import/extensions': 'off',

@@ -1,9 +1,5 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import {
-  initState, setIsShowPicker
-} from '@/src/reducers';
 import React, {
   useCallback, useEffect, useMemo, useRef, useState
 } from 'react';
@@ -16,35 +12,31 @@ import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { initState, setImageFileSrc, thumbnailStore } from '@/src/store/thumbnail.store';
+import { authStore } from '@/src/store/auth.store';
+import { commonStore, setIsShowPicker } from '@/src/store/common.store';
 import { GoogleDrivePicker } from '../../Common';
 
 export function Thumbnail() {
   const [ randomId, ] = useState(() => Nihil.uuid(0));
   const [ isClick, setIsClick, ] = useState(false);
   const [ isLoading, setIsLoading, ] = useState(false);
-  const [ imageSrc, setImageSrc, ] = useState(() => DefaultImage.src);
   const [ isSave, setIsSave, ] = useState(false);
   const [ imagePath, setImagePath, ] = useState('');
   const [ rowId, setRowId, ] = useState('');
 
   const thRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const dispatch = useAppDispatch();
+
   const router = useRouter();
 
   const {
-    title, subTitle, bgType, imgSrc, bgColor, textColor, imageY,
-  } = useAppSelector(
-    (state) => state.thumbnail
-  );
+    title, subTitle, bgType, imgSrc, bgColor, imageY, textColor, imageFileSrc,
+  } = thumbnailStore();
 
-  const { user, session, } = useAppSelector(
-    (state) => state.auth
-  );
+  const { user, session, } = authStore();
 
-  const { isShowPicker, } = useAppSelector(
-    (state) => state.common
-  );
+  const { isShowPicker, } = commonStore();
 
   const userProviders = useMemo(() => {
     if (user) {
@@ -69,8 +61,9 @@ export function Thumbnail() {
         backgroundColor: `rgb(${bgColor.red}, ${bgColor.green}, ${bgColor.blue})`,
         cacheBust: true,
         type: 'image/png',
+        skipFonts: true,
       }).then((canvas) => {
-        setImageSrc(canvas.toDataURL());
+        setImageFileSrc(canvas.toDataURL());
         canvas.toBlob((blob) => {
           if (!user || !session) {
             setIsLoading(false);
@@ -98,7 +91,7 @@ export function Thumbnail() {
 
             const settingSave = await supabase.from('thumbnails').insert({
               title,
-              subTitle,
+              sub_title: subTitle,
               user_id: user.id,
               text_red: textColor.red,
               text_green: textColor.green,
@@ -132,11 +125,11 @@ export function Thumbnail() {
 
   const onClickReset = useCallback(
     () => {
-      dispatch(initState());
+      initState();
       setIsClick(false);
       setIsLoading(false);
       setIsSave(false);
-      setImageSrc(DefaultImage.src);
+      setImageFileSrc(DefaultImage.src);
       setRowId('');
     },
     [ DefaultImage, ]
@@ -145,8 +138,8 @@ export function Thumbnail() {
   const getImageFile = useCallback(
     () => {
       const link = document.createElement('a');
-      link.download = title;
-      link.href = imageSrc;
+      link.download = `${title}.png`;
+      link.href = imageFileSrc;
       link.style.position = 'absolute';
       link.style.left = '-50%';
 
@@ -156,7 +149,7 @@ export function Thumbnail() {
 
       document.body.removeChild(link);
     },
-    [ imageSrc, title, user, ]
+    [ imageFileSrc, title, user, ]
   );
 
   const onClickGenerate = useCallback(
@@ -174,9 +167,9 @@ export function Thumbnail() {
 
       if (target.tagName === 'BUTTON' && target.id === 'close-button') {
         setIsClick(false);
-        setImageSrc(DefaultImage.src);
+        setImageFileSrc(DefaultImage.src);
         setIsSave(false);
-        dispatch(initState());
+        initState();
         setRowId('');
       }
     },
@@ -185,7 +178,7 @@ export function Thumbnail() {
 
   const onClickShowPicker = useCallback(
     () => {
-      dispatch(setIsShowPicker(true));
+      setIsShowPicker(true);
     },
     []
   );
@@ -252,7 +245,7 @@ export function Thumbnail() {
       {isClick && (
         <div className={css.image} ref={imageRef}>
           <Image
-            src={imageSrc}
+            src={imageFileSrc}
             alt='다운로드 이미지'
             width={1280}
             height={720}

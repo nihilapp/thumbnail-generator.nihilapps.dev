@@ -1,33 +1,30 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setMessage, setMessageShown, setMessageType } from '@/src/reducers';
 import { supabase } from '@/src/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import React, { useCallback } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { PageLink } from '@/src/components/Common';
 import { Icon } from '@iconify/react';
+import { authStore } from '@/src/store/auth.store';
+import { setMessage, setMessageShown, setMessageType } from '@/src/store/common.store';
 
 interface Props {
   styles?: ClassNameValue;
 }
 
 export function UserNav({ styles, }: Props) {
-  const { user, } = useAppSelector(
-    (state) => state.auth
-  );
+  const { user, } = authStore();
 
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
   const onClickSignOut = useCallback(
     () => {
       supabase.auth.signOut()
         .then(() => {
-          dispatch(setMessageType('success'));
-          dispatch(setMessageShown(false));
-          dispatch(setMessage('로그아웃 되었습니다.'));
+          setMessageType('success');
+          setMessageShown(false);
+          setMessage('로그아웃 되었습니다.');
           router.push('/');
         });
     },

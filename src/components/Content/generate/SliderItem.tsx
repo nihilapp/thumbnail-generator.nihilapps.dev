@@ -1,12 +1,12 @@
 'use client';
 
-import { useAppDispatch } from '@/src/hooks/rtk';
-import { Color, setBgColor, setTextColor } from '@/src/reducers';
+import { Color } from '@/src/reducers';
 import { Icon } from '@iconify/react';
 import React, {
   ChangeEvent, useCallback, useEffect, useRef, useState
 } from 'react';
 import { twJoin } from 'tailwind-merge';
+import { setBgColor, setTextColor } from '@/src/store/thumbnail.store';
 
 interface Props {
   colorType: string;
@@ -20,8 +20,6 @@ export function SliderItem({
 }: Props) {
   const [ editColor, setEditColor, ] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const dispatch = useAppDispatch();
 
   const onEditColor = useCallback(
     () => {
@@ -65,17 +63,17 @@ export function SliderItem({
 
   function setColor(colors: number[]) {
     if (type === 'background') {
-      dispatch(setBgColor({
+      setBgColor({
         red: colors[0],
         green: colors[1],
         blue: colors[2],
-      }));
+      });
     } else {
-      dispatch(setTextColor({
+      setTextColor({
         red: colors[0],
         green: colors[1],
         blue: colors[2],
-      }));
+      });
     }
   }
 

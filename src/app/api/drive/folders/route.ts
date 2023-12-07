@@ -41,7 +41,10 @@ export async function GET() {
     fields: '*',
   });
 
-  return NextResponse.json(folders.data, {
+  return NextResponse.json({
+    response: folders.data,
+    message: 'ok',
+  }, {
     status: HttpStatusCode.Ok,
   });
 }
@@ -81,7 +84,10 @@ export async function POST(request: NextRequest) {
 
   console.log(createResponse);
 
-  return NextResponse.json(createResponse, {
+  return NextResponse.json({
+    response: createResponse,
+    message: 'ok',
+  }, {
     status: HttpStatusCode.Created,
   });
 }

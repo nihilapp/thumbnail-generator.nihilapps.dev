@@ -3,31 +3,29 @@
 import React, {
   ChangeEvent, useCallback, useState
 } from 'react';
-import { useAppDispatch, useAppSelector } from '@/src/hooks/rtk';
-import { setBgType, setImg, setY as setImageY } from '@/src/reducers';
 import { twJoin } from 'tailwind-merge';
+import {
+  setBgType, setImg, setY as setImageY, thumbnailStore
+} from '@/src/store/thumbnail.store';
 import { ColorSlider } from './ColorSlider';
 
 export function BackgroundConfig() {
   const [ srcValue, setSrcValue, ] = useState('');
   const [ y, setY, ] = useState(0);
 
-  const { bgType, } = useAppSelector(
-    (state) => state.thumbnail
-  );
-  const dispatch = useAppDispatch();
+  const { bgType, } = thumbnailStore();
 
   const onClickColor = useCallback(
     () => {
-      dispatch(setBgType('color'));
+      setBgType('color');
     },
     []
   );
 
   const onClickImage = useCallback(
     () => {
-      dispatch(setBgType('image'));
-      dispatch(setImg(''));
+      setBgType('image');
+      setImg('');
     },
     []
   );
@@ -35,7 +33,7 @@ export function BackgroundConfig() {
   const onChangeSrc = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setSrcValue(event.target.value);
-      dispatch(setImg(event.target.value));
+      setImg(event.target.value);
     },
     []
   );
@@ -43,7 +41,7 @@ export function BackgroundConfig() {
   const onChangeY = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setY(+event.target.value);
-      dispatch(setImageY(+event.target.value));
+      setImageY(+event.target.value);
     },
     []
   );

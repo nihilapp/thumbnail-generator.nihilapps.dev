@@ -1,11 +1,17 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { Noto_Sans_KR } from 'next/font/google';
 import { Providers } from '../layouts/Providers';
 import { configData } from '../data';
 import { FooterBlock, HeaderBlock, MainBlock } from '../components/Layout';
 
 import '@/src/styles/tailwind.scss';
 import 'react-toastify/dist/ReactToastify.css';
+
+const notoSansKR = Noto_Sans_KR({
+  subsets: [ 'latin', ],
+  weight: [ '100', '200', '300', '400', '500', '600', '700', '800', '900', ],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(configData.url),
@@ -28,6 +34,9 @@ export const metadata: Metadata = {
     siteName: configData.title,
     url: configData.url,
   },
+  verification: {
+    google: '',
+  },
   alternates: {
     canonical: configData.url,
   },
@@ -40,7 +49,7 @@ interface Props {
 export default function AppLayout({ children, }: Props) {
   return (
     <html lang='ko'>
-      <body>
+      <body className={notoSansKR.className}>
         <Providers>
           <HeaderBlock />
           <MainBlock>

@@ -5,10 +5,10 @@ import { supabase } from '@/src/utils/supabase/client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
-import Link from 'next/link';
-import { Tables } from '@/src/types/supabase.types';
 import { IThumbnails } from '@/src/types/entity.types';
 import { Heading } from '@/src/components/Base';
+import { authStore } from '@/src/store/auth.store';
+import Link from 'next/link';
 
 interface Props {
   styles?: ClassNameValue;
@@ -17,15 +17,21 @@ interface Props {
 export function MyThumbnails({ styles, }: Props) {
   const [ thumbnails, setThumbnails, ] = useState<IThumbnails[]>([]);
 
-  useEffect(() => {
-    const getThmubnails = async () => {
-      return supabase.from('thumbnails').select();
-    };
+  const { user, } = authStore();
+  console.log('user >> ', user);
 
-    getThmubnails().then((thumbnails) => {
-      setThumbnails(thumbnails.data);
-    });
-  }, []);
+  useEffect(() => {
+    if (user) {
+      const getThumbnails = async () => {
+        return supabase.from('thumbnails').select().eq('user_id', user.id);
+      };
+
+      getThumbnails().then((thumbnails) => {
+        console.log(thumbnails);
+        setThumbnails(thumbnails.data);
+      });
+    }
+  }, [ user, ]);
 
   const css = {
     default: twJoin([
@@ -36,16 +42,19 @@ export function MyThumbnails({ styles, }: Props) {
       `flex flex-wrap gap-4`,
     ]),
     item: twJoin([
-      `border border-black-200 p-2 w-[calc(33.33%-(32px/3))] shrink-0 `,
+      `border-2 border-black-700 w-[calc((100%-32px)/3)] shrink-0 flex flex-col`,
     ]),
     itemImage: twJoin([
-      ``,
+      `mb-2 border-b-4 border-black-200`,
     ]),
     title: twJoin([
-      ``,
+      `text-[1.3rem] font-900 flex flex-row gap-2 mb-1 mx-2 items-stretch`,
     ]),
     subTitle: twJoin([
-      ``,
+      `flex flex-row gap-2 text-[1.1rem] font-500 mx-2 items-stretch`,
+    ]),
+    manageButton: twJoin([
+      `p-2 block text-center m-2 py-3 bg-blue-400 hover:bg-blue-600 text-white text-[1.2rem]`,
     ]),
   };
 
@@ -55,7 +64,7 @@ export function MyThumbnails({ styles, }: Props) {
         <Heading level='h2'>내 썸네일 목록</Heading>
 
         <div className={css.itemList}>
-          {thumbnails.map((thumbnail) => (
+          {thumbnails?.map((thumbnail) => (
             <div key={Nihil.uuid(0)} className={css.item}>
               <Image
                 src={thumbnail.image_link}
@@ -65,12 +74,28 @@ export function MyThumbnails({ styles, }: Props) {
                 className={css.itemImage}
                 priority
               />
-              <div className=''>
-                <h3 className={css.title}>{thumbnail.title}</h3>
-                {thumbnail.sub_title && (
-                  <p className={css.subTitle}>{thumbnail.sub_title}</p>
-                )}
+              <div className='mb-4 flex-1'>
+                <div className={css.title}>
+                  <span className='basis-[70px] text-center p-1 px-2 bg-black-100 flex items-center justify-center'>제목</span>
+                  <span className='flex-1'>{thumbnail.title}</span>
+                </div>
+                <div className={css.subTitle}>
+                  <span className='basis-[70px] text-center flex items-center justify-center p-1 px-2 bg-black-100'>부제목</span>
+                  <span className='flex-1'>
+                    {thumbnail.sub_title ? (
+                      thumbnail.sub_title
+                    ) : (
+                      '-'
+                    )}
+                  </span>
+                </div>
               </div>
+              <Link
+                href={`/thumbnails/${thumbnail.id}`}
+                className={css.manageButton}
+              >
+                관리
+              </Link>
             </div>
           ))}
         </div>

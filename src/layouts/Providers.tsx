@@ -1,22 +1,35 @@
 'use client';
 
 import React from 'react';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { persistor, store } from '@/src/store';
 import { ToastContainer } from 'react-toastify';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 interface Props {
   children: React.ReactNode;
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      staleTime: 10 * 60 * 1000,
+      refetchInterval: 10 * 60 * 1000,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
 export function Providers({ children, }: Props) {
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        {/* <SessionProvider> */}
+    <>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools position='bottom' />
         {children}
-        {/* </SessionProvider> */}
         <ToastContainer
           position='bottom-right'
           autoClose={5000}
@@ -29,7 +42,7 @@ export function Providers({ children, }: Props) {
           pauseOnHover
           theme='dark'
         />
-      </PersistGate>
-    </Provider>
+      </QueryClientProvider>
+    </>
   );
 }

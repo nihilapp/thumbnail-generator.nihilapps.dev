@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { supabase } from '@/src/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/src/hooks/rtk';
-import { setMessage, setMessageShown, setMessageType } from '@/src/reducers';
+import { setMessage, setMessageShown, setMessageType } from '@/src/store/common.store';
 
 interface Props {
   id: string;
@@ -15,7 +14,6 @@ interface Props {
 export function ThumbnailData({ id, styles, }: Props) {
   const [ thumbnail, setThumbnail, ] = useState(null);
 
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,9 +24,9 @@ export function ThumbnailData({ id, styles, }: Props) {
 
         setThumbnail(thumbnail);
       } catch (error) {
-        dispatch(setMessageType('error'));
-        dispatch(setMessage(error.message));
-        dispatch(setMessageShown(false));
+        setMessageType('error');
+        setMessage(error.message);
+        setMessageShown(false);
 
         router.push('/');
       }

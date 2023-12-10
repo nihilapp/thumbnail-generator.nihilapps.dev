@@ -10,7 +10,7 @@ import { Color, setBgColor, setTextColor } from '@/src/store/thumbnail.store';
 interface Props {
   colorType: string;
   colors: Color;
-  color: number;
+  color: string;
   type: string;
 }
 
@@ -34,7 +34,7 @@ export function SliderItem({
           event.target.value = (255).toString();
         }
 
-        setColor([ +event.target.value, colors.green, colors.blue, ]);
+        setColor([ event.target.value, colors.green, colors.blue, ]);
       },
       [ colors.green, colors.blue, ]
     ),
@@ -44,7 +44,7 @@ export function SliderItem({
           event.target.value = (255).toString();
         }
 
-        setColor([ colors.red, +event.target.value, colors.blue, ]);
+        setColor([ colors.red, event.target.value, colors.blue, ]);
       },
       [ colors.red, colors.blue, ]
     ),
@@ -54,13 +54,13 @@ export function SliderItem({
           event.target.value = (255).toString();
         }
 
-        setColor([ colors.red, colors.green, +event.target.value, ]);
+        setColor([ colors.red, colors.green, event.target.value, ]);
       },
       [ colors.red, colors.green, ]
     ),
   };
 
-  function setColor(colors: number[]) {
+  function setColor(colors: string[]) {
     if (type === 'background') {
       setBgColor({
         red: colors[0],

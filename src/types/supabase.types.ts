@@ -83,16 +83,18 @@ export interface Database {
           identity_data: Json
           last_sign_in_at: string | null
           provider: string
+          provider_id: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           email?: string | null
-          id: string
+          id?: string
           identity_data: Json
           last_sign_in_at?: string | null
           provider: string
+          provider_id: string
           updated_at?: string | null
           user_id: string
         }
@@ -103,6 +105,7 @@ export interface Database {
           identity_data?: Json
           last_sign_in_at?: string | null
           provider?: string
+          provider_id?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -402,6 +405,7 @@ export interface Database {
           ip: unknown | null
           not_after: string | null
           refreshed_at: string | null
+          tag: string | null
           updated_at: string | null
           user_agent: string | null
           user_id: string
@@ -414,6 +418,7 @@ export interface Database {
           ip?: unknown | null
           not_after?: string | null
           refreshed_at?: string | null
+          tag?: string | null
           updated_at?: string | null
           user_agent?: string | null
           user_id: string
@@ -426,6 +431,7 @@ export interface Database {
           ip?: unknown | null
           not_after?: string | null
           refreshed_at?: string | null
+          tag?: string | null
           updated_at?: string | null
           user_agent?: string | null
           user_id?: string
@@ -657,16 +663,18 @@ export interface Database {
           bg_position: number | null
           bg_red: number | null
           bg_src: string | null
-          created: string | null
+          created_at: string
+          height: number | null
           id: string
           image_link: string | null
+          image_path: string | null
           sub_title: string | null
           text_blue: number | null
           text_green: number | null
           text_red: number | null
           title: string
-          updated: string | null
-          user_id: string
+          user_id: string | null
+          width: number | null
         }
         Insert: {
           bg_blue?: number | null
@@ -674,66 +682,43 @@ export interface Database {
           bg_position?: number | null
           bg_red?: number | null
           bg_src?: string | null
-          created?: string | null
+          created_at?: string
+          height?: number | null
           id?: string
           image_link?: string | null
-          sub_title?: string | null
-          text_blue?: number | null
-          text_green?: number | null
-          text_red?: number | null
-          title: string
-          updated?: string | null
-          user_id: string
-        }
-        Update: {
-          bg_blue?: number | null
-          bg_green?: number | null
-          bg_position?: number | null
-          bg_red?: number | null
-          bg_src?: string | null
-          created?: string | null
-          id?: string
-          image_link?: string | null
+          image_path?: string | null
           sub_title?: string | null
           text_blue?: number | null
           text_green?: number | null
           text_red?: number | null
           title?: string
-          updated?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_info: {
-        Row: {
-          github_email: string | null
-          google_email: string | null
-          id: number
-          kakao_email: string | null
-          naver_email: string | null
-          user_id: string
-        }
-        Insert: {
-          github_email?: string | null
-          google_email?: string | null
-          id?: number
-          kakao_email?: string | null
-          naver_email?: string | null
-          user_id: string
+          user_id?: string | null
+          width?: number | null
         }
         Update: {
-          github_email?: string | null
-          google_email?: string | null
-          id?: number
-          kakao_email?: string | null
-          naver_email?: string | null
-          user_id?: string
+          bg_blue?: number | null
+          bg_green?: number | null
+          bg_position?: number | null
+          bg_red?: number | null
+          bg_src?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          image_link?: string | null
+          image_path?: string | null
+          sub_title?: string | null
+          text_blue?: number | null
+          text_green?: number | null
+          text_red?: number | null
+          title?: string
+          user_id?: string | null
+          width?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: 'user_info_user_id_fkey'
+            foreignKeyName: 'thumbnails_user_id_fkey'
             columns: ['user_id']
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
           }

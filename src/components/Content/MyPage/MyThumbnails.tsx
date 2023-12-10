@@ -3,7 +3,7 @@
 import { Nihil } from '@/src/utils/nihil';
 import { supabase } from '@/src/utils/supabase/client';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
 import { IThumbnails } from '@/src/types/entity.types';
 import { Heading } from '@/src/components/Base';
@@ -23,15 +23,37 @@ export function MyThumbnails({ styles, }: Props) {
   useEffect(() => {
     if (user) {
       const getThumbnails = async () => {
-        return supabase.from('thumbnails').select().eq('user_id', user.id);
+        return supabase
+          .from('thumbnails')
+          .select()
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false, });
       };
 
       getThumbnails().then((thumbnails) => {
-        console.log(thumbnails);
+        console.log(thumbnails.data);
         setThumbnails(thumbnails.data);
       });
     }
   }, [ user, ]);
+
+  const onClickDelete = useCallback(
+    async (id: string, path: string) => {
+      console.log(id);
+
+      await supabase
+        .from('thumbnails')
+        .delete()
+        .eq('id', id);
+
+      await supabase.storage
+        .from('thumbnails')
+        .remove([ path, ]);
+
+      setThumbnails((prevState) => prevState.filter((item) => item.id !== id));
+    },
+    []
+  );
 
   const css = {
     default: twJoin([
@@ -42,19 +64,22 @@ export function MyThumbnails({ styles, }: Props) {
       `flex flex-wrap gap-4`,
     ]),
     item: twJoin([
-      `border-2 border-black-700 w-[calc((100%-32px)/3)] shrink-0 flex flex-col`,
+      `w-[calc((100%-32px)/3)] shrink-0 flex flex-col gap-2 p-2 border border-black-200 shadow-black-200 shadow-md`,
     ]),
     itemImage: twJoin([
-      `mb-2 border-b-4 border-black-200`,
+      `border-2 border-black-400`,
     ]),
-    title: twJoin([
-      `text-[1.3rem] font-900 flex flex-row gap-2 mb-1 mx-2 items-stretch`,
-    ]),
-    subTitle: twJoin([
-      `flex flex-row gap-2 text-[1.1rem] font-500 mx-2 items-stretch`,
+    buttons: twJoin([
+      `flex flex-row gap-2 items-center`,
     ]),
     manageButton: twJoin([
-      `p-2 block text-center m-2 py-3 bg-blue-400 hover:bg-blue-600 text-white text-[1.2rem]`,
+      `p-2 bg-blue-400 flex-1 text-white hover:bg-blue-600 text-center text-[1.1rem] font-500`,
+    ]),
+    deleteButton: twJoin([
+      `p-2 bg-red-400 flex-1 text-white hover:bg-red-600 text-center text-[1.1rem] font-500`,
+    ]),
+    noneItem: twJoin([
+      `w-full text-center py-[250px] text-[2rem] font-900 text-black-base`,
     ]),
   };
 
@@ -64,6 +89,11 @@ export function MyThumbnails({ styles, }: Props) {
         <Heading level='h2'>내 썸네일 목록</Heading>
 
         <div className={css.itemList}>
+          {thumbnails.length === 0 ? (
+            <h2 className={css.noneItem}>썸네일이 없습니다.</h2>
+          ) : (
+            ''
+          )}
           {thumbnails?.map((thumbnail) => (
             <div key={Nihil.uuid(0)} className={css.item}>
               <Image
@@ -74,28 +104,21 @@ export function MyThumbnails({ styles, }: Props) {
                 className={css.itemImage}
                 priority
               />
-              <div className='mb-4 flex-1'>
-                <div className={css.title}>
-                  <span className='basis-[70px] text-center p-1 px-2 bg-black-100 flex items-center justify-center'>제목</span>
-                  <span className='flex-1'>{thumbnail.title}</span>
-                </div>
-                <div className={css.subTitle}>
-                  <span className='basis-[70px] text-center flex items-center justify-center p-1 px-2 bg-black-100'>부제목</span>
-                  <span className='flex-1'>
-                    {thumbnail.sub_title ? (
-                      thumbnail.sub_title
-                    ) : (
-                      '-'
-                    )}
-                  </span>
-                </div>
+              <div className={css.buttons}>
+                <Link
+                  href='/thumbnails/[id]'
+                  as={`/thumbnails/${thumbnail.id}`}
+                  className={css.manageButton}
+                >
+                  자세히 보기
+                </Link>
+                <button
+                  className={css.deleteButton}
+                  onClick={() => onClickDelete(thumbnail.id, thumbnail.image_path)}
+                >
+                  삭제
+                </button>
               </div>
-              <Link
-                href={`/thumbnails/${thumbnail.id}`}
-                className={css.manageButton}
-              >
-                관리
-              </Link>
             </div>
           ))}
         </div>

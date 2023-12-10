@@ -1,6 +1,5 @@
 'use client';
 
-import { DevTool } from '@hookform/devtools';
 import React, { useCallback } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
@@ -23,7 +22,7 @@ interface Inputs {
 
 export function SignUpForm({ styles, }: Props) {
   const {
-    register, handleSubmit, control, watch, formState: { errors, },
+    register, handleSubmit, watch, formState: { errors, },
   } = useForm<Inputs>({
     mode: 'all',
   });
@@ -183,10 +182,6 @@ export function SignUpForm({ styles, }: Props) {
       </form>
 
       <AuthButton />
-
-      {process.env.NODE_ENV === 'development' && (
-        <DevTool control={control} placement='top-right' />
-      )}
     </>
   );
 }

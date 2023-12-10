@@ -5,10 +5,8 @@ import React, {
 } from 'react';
 import { twJoin } from 'tailwind-merge';
 import { toCanvas } from 'html-to-image';
-import { Icon } from '@iconify/react';
 import { Nihil } from '@/src/utils/nihil';
 import Image from 'next/image';
-import DefaultImage from '@/src/images/defaultImage.png';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
@@ -16,11 +14,13 @@ import {
   initState, setBgColor, setImageFileSrc, setTextColor, thumbnailStore
 } from '@/src/store/thumbnail.store';
 import { authStore } from '@/src/store/auth.store';
-import { commonStore } from '@/src/store/common.store';
-import defaultImage from '@/src/images/defaultImage.png';
-import { GoogleDrivePicker } from '../../Common';
+import DefaultImage from '@/src/images/defaultImage.png';
 
-export function Thumbnail() {
+interface Props {
+  id: string;
+}
+
+export function EditThumbnailScreen({ id, }: Props) {
   const [ isClick, setIsClick, ] = useState(false);
   const [ isLoading, setIsLoading, ] = useState(false);
   const [ rowId, setRowId, ] = useState('');
@@ -31,61 +31,21 @@ export function Thumbnail() {
   const router = useRouter();
 
   const {
-    title, subTitle, bgType, imgSrc, bgRed, bgGreen, bgBlue, imageY, textRed, textGreen, textBlue, imageFileSrc, width, height,
+    title, subTitle, bgType, imgSrc, bgRed, bgGreen, bgBlue, imageY, textRed, textGreen, textBlue, imageFileSrc, width, height, imagePath, testInit,
   } = thumbnailStore();
 
   const { user, session, } = authStore();
-  const { isShowPicker, } = commonStore();
 
   useEffect(() => {
-    thumbnailStore.persist.clearStorage();
-
-    thumbnailStore.setState(() => ({
-      bgType: 'color',
-      title: '제목을 입력하세요',
-      subTitle: '',
-      textRed: '51',
-      textGreen: '51',
-      textBlue: '51',
-      bgRed: '255',
-      bgGreen: '255',
-      bgBlue: '255',
-      imgSrc: '',
-      imageY: 0,
-      imageFileSrc: defaultImage.src,
-      width: 1280,
-      height: 720,
-      imagePath: '',
-    }));
-    setIsClick(() => false);
-    setIsLoading(() => false);
-    setRowId('');
-
     return () => {
-      thumbnailStore.setState(() => ({
-        bgType: 'color',
-        title: '제목을 입력하세요',
-        subTitle: '',
-        textRed: '51',
-        textGreen: '51',
-        textBlue: '51',
-        bgRed: '255',
-        bgGreen: '255',
-        bgBlue: '255',
-        imgSrc: '',
-        imageY: 0,
-        imageFileSrc: defaultImage.src,
-        width: 1280,
-        height: 720,
-        imagePath: '',
-      }));
-      setIsClick(() => false);
-      setIsLoading(() => false);
+      console.log('컴포넌트가 죽어요');
+      thumbnailStore.persist.clearStorage();
+      setIsClick(false);
+      setIsLoading(false);
+      setImageFileSrc(DefaultImage.src);
       setRowId('');
     };
-  }, [ thumbnailStore, ]);
-
-  console.log(thumbnailStore());
+  }, []);
 
   useEffect(() => {
     if (isLoading) {
@@ -97,7 +57,7 @@ export function Thumbnail() {
         skipFonts: true,
       }).then((canvas) => {
         setImageFileSrc(canvas.toDataURL());
-        canvas.toBlob((blob) => {
+        canvas.toBlob(async (blob) => {
           if (!user || !session) {
             setIsLoading(false);
             toast.success('썸네일 이미지가 생성되었습니다.');
@@ -111,63 +71,63 @@ export function Thumbnail() {
           const folder = user.id;
           const nowDate = Nihil.date().format();
 
-          supabase.storage.from('thumbnails').upload(
-            `${folder}/${nowDate}.png`,
-            file,
-            {
-              contentType: 'image/png',
-            }
-          ).then(async (response) => {
-            const fileUrl = supabase.storage
-              .from('thumbnails')
-              .getPublicUrl(response.data.path);
+          await supabase.storage.from('thumbnails').remove([
+            imagePath,
+          ]).then((response) => {
+            console.log(response.data);
+            console.log('기존의 썸네일 이미지가 삭제됩니다.');
 
-            const settingSave = await supabase.from('thumbnails').insert({
-              title,
-              sub_title: subTitle,
-              user_id: user.id,
-              text_red: +textRed,
-              text_green: +textGreen,
-              text_blue: +textBlue,
-              bg_red: +bgRed,
-              bg_green: +bgGreen,
-              bg_blue: +bgBlue,
-              bg_src: imgSrc,
-              bg_position: imageY,
-              image_link: fileUrl.data.publicUrl,
-              image_path: response.data.path,
-              width,
-              height,
-            }).select('id');
+            supabase.storage.from('thumbnails').upload(
+              `${folder}/${nowDate}.png`,
+              file,
+              {
+                contentType: 'image/png',
+              }
+            ).then(async (response) => {
+              const fileUrl = supabase.storage
+                .from('thumbnails')
+                .getPublicUrl(response.data.path);
 
-            if (settingSave.data) {
-              setRowId(settingSave.data[0].id);
-            }
+              const updateThumbnail = await supabase
+                .from('thumbnails')
+                .update({
+                  title,
+                  sub_title: subTitle,
+                  user_id: user.id,
+                  text_red: +textRed,
+                  text_green: +textGreen,
+                  text_blue: +textBlue,
+                  bg_red: +bgRed,
+                  bg_green: +bgGreen,
+                  bg_blue: +bgBlue,
+                  bg_src: imgSrc,
+                  bg_position: imageY,
+                  image_link: fileUrl.data.publicUrl,
+                  image_path: response.data.path,
+                  width,
+                  height,
+                })
+                .eq('id', id)
+                .select('id');
 
-            if (!settingSave.error) {
-              toast.success('설정이 저장되었습니다.');
-            } else {
-              toast.error('설정이 저장되지 않았습니다.');
-            }
+              if (updateThumbnail.data) {
+                setRowId(updateThumbnail.data[0].id);
+              }
 
-            setIsLoading(false);
-            toast.success('썸네일 이미지가 생성되었습니다.');
+              if (!updateThumbnail.error) {
+                toast.success('설정이 저장되었습니다.');
+              } else {
+                toast.error('설정이 저장되지 않았습니다.');
+              }
+
+              setIsLoading(false);
+              toast.success('썸네일 이미지가 수정되었습니다.');
+            });
           });
         });
       });
     }
-  }, [ isLoading, title, subTitle, thRef, bgRed, bgGreen, bgBlue, user, textRed, textGreen, textBlue, imgSrc, imageY, ]);
-
-  const onClickReset = useCallback(
-    () => {
-      initState();
-      setIsClick(false);
-      setIsLoading(false);
-      setImageFileSrc(DefaultImage.src);
-      setRowId('');
-    },
-    [ DefaultImage, ]
-  );
+  }, [ isLoading, title, subTitle, thRef, bgRed, bgGreen, bgBlue, user, textRed, textGreen, textBlue, imgSrc, imageY, imagePath, ]);
 
   const getImageFile = useCallback(
     () => {
@@ -200,18 +160,22 @@ export function Thumbnail() {
       const target = event.target as HTMLElement;
 
       if (target.tagName === 'BUTTON' && target.id === 'close-button') {
-        setIsClick(false);
-        setImageFileSrc(DefaultImage.src);
-        initState();
-        setRowId('');
+        router.push(`/thumbnails/${id}`);
       }
     },
-    [ DefaultImage, ]
+    []
   );
 
   const onClickManage = useCallback(() => {
     router.push(`/thumbnails/${rowId}`);
   }, [ rowId, ]);
+
+  const onClickBack = useCallback(
+    () => {
+      router.back();
+    },
+    []
+  );
 
   const css = {
     container: twJoin([
@@ -270,12 +234,6 @@ export function Thumbnail() {
 
   return (
     <>
-      {isShowPicker && (
-        <>
-          <GoogleDrivePicker />
-        </>
-      )}
-
       {isClick && (
         <div className={css.image} ref={imageRef}>
           <Image
@@ -287,15 +245,6 @@ export function Thumbnail() {
           />
 
           <div className='flex flex-row gap-2 w-[1280px]'>
-            {user && (
-              <button
-                onClick={onClickManage}
-                className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
-              >
-                썸네일 관리
-              </button>
-            )}
-
             <button
               onClick={getImageFile}
               className='block flex-1 shrink-0 p-2 bg-blue-500 hover:bg-blue-700 text-white text-[1.5rem]'
@@ -341,13 +290,11 @@ export function Thumbnail() {
       </div>
 
       <div className={css.buttons}>
-        <button onClick={onClickReset} className={css.button}>초기화</button>
+        <button onClick={onClickBack} className={css.button}>
+          뒤로가기
+        </button>
         <button onClick={onClickGenerate} className={css.button}>
-          {isLoading ? (
-            <Icon icon='mingcute:loading-fill' className='animate-spin' />
-          ) : (
-            '이미지로 저장'
-          )}
+          썸네일 수정
         </button>
       </div>
     </>

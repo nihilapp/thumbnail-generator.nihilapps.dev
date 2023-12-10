@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 type ToastType = ('info' | 'success' | 'warning' | 'error' | 'default');
 
@@ -11,19 +10,13 @@ interface AuthState {
   isShowPicker: boolean;
 }
 
-export const commonStore = create(
-  persist<AuthState>(() => ({
+export const commonStore = create<AuthState>(
+  () => ({
     messageType: 'success',
     message: '',
     messageShown: false,
     isSettingSaved: false,
     isShowPicker: false,
-  }), {
-    name: 'state/common',
-    skipHydration: true,
-    onRehydrateStorage(state) {
-      console.log('state >> ', state);
-    },
   })
 );
 

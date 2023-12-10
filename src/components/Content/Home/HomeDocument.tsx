@@ -44,7 +44,7 @@ export function HomeDocument({ styles, }: Props) {
 
         <Heading level='h2' no={2}>사용방법</Heading>
         <TextBlock styles='mb-4'>
-          썸네일 생성기는 아래의 가이드에 따라 이용할 수 있습니다.
+          썸네일 생성기는 아래의 가이드에 따라 이용할 수 있습니다. 업데이트가 진행됨에 따라서 내용이 달라질 수 있습니다.
         </TextBlock>
 
         <Heading level='h3' no={2.1}>회원과 비회원에 따른 기능 분리</Heading>

@@ -3,7 +3,6 @@
 import React, { useCallback } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ClassNameValue, twJoin } from 'tailwind-merge';
-import { DevTool } from '@hookform/devtools';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { supabase } from '@/src/utils/supabase/client';
@@ -22,7 +21,7 @@ interface Inputs {
 
 export function SignInForm({ styles, }: Props) {
   const {
-    register, handleSubmit, control, formState: { errors, },
+    register, handleSubmit, formState: { errors, },
   } = useForm<Inputs>({ mode: 'all', });
 
   const router = useRouter();
@@ -126,10 +125,6 @@ export function SignInForm({ styles, }: Props) {
       </form>
 
       <AuthButton />
-
-      {process.env.NODE_ENV === 'development' && (
-        <DevTool control={control} placement='top-right' />
-      )}
     </>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { supabase } from '@/src/utils/supabase/client';
-import { ThumbnailData } from '@/src/components/Content/MyPage';
+import { EditThumbnail } from '@/src/components/Content/MyPage';
 import { setMeta } from '@/src/hooks/setMeta';
 
 export async function generateStaticParams() {
@@ -20,15 +20,15 @@ interface Props {
 
 export async function generateMetadata({ params, }: Props) {
   return setMeta({
-    title: `썸네일 관리(${params.id})`,
-    url: `/thumbnails/${params.id}`,
+    title: `썸네일 수정(${params.id})`,
+    url: `/thumbnails/${params.id}/edit`,
   });
 }
 
-export default function ThumbnailManagePage({ params: { id, }, }: Props) {
+export default function page({ params, }: Props) {
   return (
     <>
-      <ThumbnailData id={id} />
+      <EditThumbnail id={params.id} />
     </>
   );
 }

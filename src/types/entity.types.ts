@@ -6,6 +6,9 @@ export type UserWithoutPassword = {
 }
 
 export interface IThumbnails {
+  width?: number;
+  height?: number;
+  image_path?: string;
   id?: string;
   user_id: string;
   title: string;
@@ -18,7 +21,7 @@ export interface IThumbnails {
   bg_blue?: number;
   bg_src?: string;
   bg_position?: number;
-  image_link: string;
+  image_link?: string;
   created?: string;
   updated?: string;
 }

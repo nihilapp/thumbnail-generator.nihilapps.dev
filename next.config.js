@@ -14,6 +14,7 @@ module.exports = {
       pathname: '*/**',
     }, ],
   },
+  output: 'standalone',
   eslint: {
     dirs: [],
   },

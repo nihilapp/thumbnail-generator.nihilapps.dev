@@ -13,8 +13,8 @@ dayjs.tz.setDefault('Asia/Seoul');
 dayjs.locale(ko);
 
 export class Nihil {
-  static uuid(index: number) {
-    return uuid() + index;
+  static uuid(index?: number) {
+    return uuid() + (index || 0);
   }
 
   static string(data: any) {
@@ -28,13 +28,13 @@ export class Nihil {
   static toRGBHex(color: Color) {
     const { red, green, blue, } = color;
 
-    let redHex = red.toString(16);
+    let redHex = Number(red).toString(16);
     redHex = redHex.length > 1 ? redHex : `0${redHex}`;
 
-    let greenHex = green.toString(16);
+    let greenHex = Number(green).toString(16);
     greenHex = greenHex.length > 1 ? greenHex : `0${greenHex}`;
 
-    let blueHex = blue.toString(16);
+    let blueHex = Number(blue).toString(16);
     blueHex = blueHex.length > 1 ? blueHex : `0${blueHex}`;
 
     return `#${redHex}${greenHex}${blueHex}`;
@@ -42,5 +42,9 @@ export class Nihil {
 
   static date(date?: (string | number | Date)) {
     return dayjs(date || new Date()).tz('Asia/Seoul');
+  }
+
+  static dateFormat(date?: (string | number | Date), format?: string) {
+    return this.date(date || new Date()).format(format || 'YYYY-MM-DD');
   }
 }

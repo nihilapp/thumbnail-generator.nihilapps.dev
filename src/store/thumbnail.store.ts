@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import defaultImage from '@/src/images/defaultImage.png';
+import DefaultImage from '@/src/images/defaultImage.png';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type Color = {
@@ -24,11 +24,10 @@ type ThumbnailState = {
   width: number;
   height: number;
   imagePath: string;
-  testInit: () => void;
 }
 
 export const thumbnailStore = create(
-  persist<ThumbnailState>((setState, getState) => ({
+  persist<ThumbnailState>(() => ({
     bgType: 'color',
     title: '제목을 입력하세요',
     subTitle: '',
@@ -40,30 +39,10 @@ export const thumbnailStore = create(
     bgBlue: '255',
     imgSrc: '',
     imageY: 0,
-    imageFileSrc: defaultImage.src,
+    imageFileSrc: DefaultImage.src,
     width: 1280,
     height: 720,
     imagePath: '',
-    testInit() {
-      console.log('초기화가 왜 안돼냐고 다른건 다 되는데');
-      setState({
-        bgType: 'color',
-        title: '제목을 입력하세요',
-        subTitle: '',
-        textRed: '51',
-        textGreen: '51',
-        textBlue: '51',
-        bgRed: '255',
-        bgGreen: '255',
-        bgBlue: '255',
-        imgSrc: '',
-        imageY: 0,
-        imageFileSrc: defaultImage.src,
-        width: 1280,
-        height: 720,
-        imagePath: '',
-      });
-    },
   }), {
     name: 'state/thumbnails',
     skipHydration: true,
@@ -85,7 +64,7 @@ export const initState = () => {
     bgBlue: '255',
     imgSrc: '',
     imageY: 0,
-    imageFileSrc: defaultImage.src,
+    imageFileSrc: DefaultImage.src,
     width: 1280,
     height: 720,
   }));
@@ -104,7 +83,6 @@ export const setSubTitle = (value: string) => {
 };
 
 export const setTextColor = (color: Color) => {
-  console.log('textColor >> ', color);
   thumbnailStore.setState((state) => ({
     ...state,
     textRed: color.red,

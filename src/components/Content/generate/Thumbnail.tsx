@@ -13,12 +13,9 @@ import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import {
-  initState, setBgColor, setImageFileSrc, setTextColor, thumbnailStore
+  initState, setImageFileSrc, thumbnailStore
 } from '@/src/store/thumbnail.store';
 import { authStore } from '@/src/store/auth.store';
-import { commonStore } from '@/src/store/common.store';
-import defaultImage from '@/src/images/defaultImage.png';
-import { GoogleDrivePicker } from '../../Common';
 
 export function Thumbnail() {
   const [ isClick, setIsClick, ] = useState(false);
@@ -35,7 +32,6 @@ export function Thumbnail() {
   } = thumbnailStore();
 
   const { user, session, } = authStore();
-  const { isShowPicker, } = commonStore();
 
   useEffect(() => {
     thumbnailStore.persist.clearStorage();
@@ -52,7 +48,7 @@ export function Thumbnail() {
       bgBlue: '255',
       imgSrc: '',
       imageY: 0,
-      imageFileSrc: defaultImage.src,
+      imageFileSrc: DefaultImage.src,
       width: 1280,
       height: 720,
       imagePath: '',
@@ -74,7 +70,7 @@ export function Thumbnail() {
         bgBlue: '255',
         imgSrc: '',
         imageY: 0,
-        imageFileSrc: defaultImage.src,
+        imageFileSrc: DefaultImage.src,
         width: 1280,
         height: 720,
         imagePath: '',
@@ -84,8 +80,6 @@ export function Thumbnail() {
       setRowId('');
     };
   }, [ thumbnailStore, ]);
-
-  console.log(thumbnailStore());
 
   useEffect(() => {
     if (isLoading) {
@@ -270,12 +264,6 @@ export function Thumbnail() {
 
   return (
     <>
-      {isShowPicker && (
-        <>
-          <GoogleDrivePicker />
-        </>
-      )}
-
       {isClick && (
         <div className={css.image} ref={imageRef}>
           <Image

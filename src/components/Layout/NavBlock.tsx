@@ -24,7 +24,6 @@ export function NavBlock({ styles, }: Props) {
   useEffect(() => {
     const { data, } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log(event);
 
         switch (event) {
           case 'INITIAL_SESSION':
@@ -135,7 +134,6 @@ export function NavBlock({ styles, }: Props) {
     );
 
     const interval = setInterval(() => {
-      console.log(number);
       setNumber((prev) => prev + 1);
     }, 180000);
 

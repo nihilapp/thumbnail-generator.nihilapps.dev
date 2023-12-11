@@ -12,9 +12,6 @@ interface Props {
 export function ResolutionConfig({ styles, }: Props) {
   const { width, height, } = thumbnailStore();
 
-  console.log('width >> ', width);
-  console.log('height >> ', height);
-
   const onChangeWidth = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
       setWidth(+event.target.value);

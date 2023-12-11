@@ -1,7 +1,7 @@
 import React from 'react';
-import { supabase } from '@/src/utils/supabase/client';
-import { EditThumbnail } from '@/src/components/Content/MyPage';
 import { setMeta } from '@/src/hooks/setMeta';
+import { supabase } from '@/src/utils/supabase/client';
+import { GoogleDrivePicker } from '@/src/components/Content/upload';
 
 export async function generateStaticParams() {
   const { data, } = await supabase
@@ -20,15 +20,15 @@ interface Props {
 
 export async function generateMetadata({ params, }: Props) {
   return setMeta({
-    title: `썸네일 수정(${params.id})`,
-    url: `/thumbnails/${params.id}/edit`,
+    title: `업로드(구글 드라이브)`,
+    url: `/thumbnails/${params.id}/upload`,
   });
 }
 
-export default function ThumbnailEditPage({ params, }: Props) {
+export default function ThumbnailUploadPage({ params, }: Props) {
   return (
     <>
-      <EditThumbnail id={params.id} />
+      <GoogleDrivePicker id={params.id} />
     </>
   );
 }

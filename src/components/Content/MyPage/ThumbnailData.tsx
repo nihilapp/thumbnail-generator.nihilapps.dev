@@ -58,6 +58,13 @@ export function ThumbnailData({ id, styles, }: Props) {
     getThumbnailById();
   }, []);
 
+  const onClickUpload = useCallback(
+    () => {
+      router.push(`/thumbnails/${thumbnail.id}/upload`);
+    },
+    [ thumbnail, ]
+  );
+
   const onClickEdit = useCallback(
     () => {
       router.push(`/thumbnails/${thumbnail.id}/edit`);
@@ -67,8 +74,6 @@ export function ThumbnailData({ id, styles, }: Props) {
 
   const onClickDelete = useCallback(
     async (id: string, path: string) => {
-      console.log(id);
-
       await supabase
         .from('thumbnails')
         .delete()
@@ -119,7 +124,9 @@ export function ThumbnailData({ id, styles, }: Props) {
             <Heading level='h2'>썸네일 관리</Heading>
             <div className={css.buttons}>
               {user?.app_metadata.provider === 'google' && (
-                <button className={css.blueButton}>드라이브에 업로드</button>
+                <button className={css.blueButton} onClick={onClickUpload}>
+                  드라이브에 업로드
+                </button>
               )}
               <button
                 className={css.blueButton}

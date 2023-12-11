@@ -31,7 +31,6 @@ export function MyThumbnails({ styles, }: Props) {
       };
 
       getThumbnails().then((thumbnails) => {
-        console.log(thumbnails.data);
         setThumbnails(thumbnails.data);
       });
     }
@@ -39,8 +38,6 @@ export function MyThumbnails({ styles, }: Props) {
 
   const onClickDelete = useCallback(
     async (id: string, path: string) => {
-      console.log(id);
-
       await supabase
         .from('thumbnails')
         .delete()
@@ -86,6 +83,8 @@ export function MyThumbnails({ styles, }: Props) {
   return (
     <>
       <div className={css.default}>
+        <Heading level='h2'>내 정보</Heading>
+
         <Heading level='h2'>내 썸네일 목록</Heading>
 
         <div className={css.itemList}>

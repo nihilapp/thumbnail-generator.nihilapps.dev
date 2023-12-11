@@ -56,16 +56,15 @@ interface PostBody {
 export async function POST(request: NextRequest) {
   const { folderName, }: PostBody = await request.json();
 
-  console.log(folderName);
-
   const response = createSupabaseServerClient();
   const { data: { session, }, } = await response.auth.getSession();
+  const { data: { user, }, } = await response.auth.getUser();
 
   const googleAuthClient = new google.auth.OAuth2();
 
   googleAuthClient.setCredentials({
-    access_token: session.provider_token,
-    refresh_token: session.provider_refresh_token,
+    access_token: user.user_metadata.provider_token,
+    refresh_token: user.user_metadata.provider_refresh_token,
   });
 
   const drive = google.drive({
@@ -81,8 +80,6 @@ export async function POST(request: NextRequest) {
     },
     fields: 'id',
   });
-
-  console.log(createResponse);
 
   return NextResponse.json({
     response: createResponse,

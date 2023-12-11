@@ -10,9 +10,7 @@ import Image from 'next/image';
 import { supabase } from '@/src/utils/supabase/client';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import {
-  initState, setBgColor, setImageFileSrc, setTextColor, thumbnailStore
-} from '@/src/store/thumbnail.store';
+import { setImageFileSrc, thumbnailStore } from '@/src/store/thumbnail.store';
 import { authStore } from '@/src/store/auth.store';
 import DefaultImage from '@/src/images/defaultImage.png';
 
@@ -23,7 +21,6 @@ interface Props {
 export function EditThumbnailScreen({ id, }: Props) {
   const [ isClick, setIsClick, ] = useState(false);
   const [ isLoading, setIsLoading, ] = useState(false);
-  const [ rowId, setRowId, ] = useState('');
 
   const thRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -31,19 +28,17 @@ export function EditThumbnailScreen({ id, }: Props) {
   const router = useRouter();
 
   const {
-    title, subTitle, bgType, imgSrc, bgRed, bgGreen, bgBlue, imageY, textRed, textGreen, textBlue, imageFileSrc, width, height, imagePath, testInit,
+    title, subTitle, bgType, imgSrc, bgRed, bgGreen, bgBlue, imageY, textRed, textGreen, textBlue, imageFileSrc, width, height, imagePath,
   } = thumbnailStore();
 
   const { user, session, } = authStore();
 
   useEffect(() => {
     return () => {
-      console.log('컴포넌트가 죽어요');
       thumbnailStore.persist.clearStorage();
       setIsClick(false);
       setIsLoading(false);
       setImageFileSrc(DefaultImage.src);
-      setRowId('');
     };
   }, []);
 
@@ -74,7 +69,6 @@ export function EditThumbnailScreen({ id, }: Props) {
           await supabase.storage.from('thumbnails').remove([
             imagePath,
           ]).then((response) => {
-            console.log(response.data);
             console.log('기존의 썸네일 이미지가 삭제됩니다.');
 
             supabase.storage.from('thumbnails').upload(
@@ -109,10 +103,6 @@ export function EditThumbnailScreen({ id, }: Props) {
                 })
                 .eq('id', id)
                 .select('id');
-
-              if (updateThumbnail.data) {
-                setRowId(updateThumbnail.data[0].id);
-              }
 
               if (!updateThumbnail.error) {
                 toast.success('설정이 저장되었습니다.');
@@ -165,10 +155,6 @@ export function EditThumbnailScreen({ id, }: Props) {
     },
     []
   );
-
-  const onClickManage = useCallback(() => {
-    router.push(`/thumbnails/${rowId}`);
-  }, [ rowId, ]);
 
   const onClickBack = useCallback(
     () => {

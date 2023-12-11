@@ -60,8 +60,6 @@ export async function POST(request: NextRequest) {
     imageFile,
   ]);
 
-  console.log(data);
-
   return NextResponse.json({
     response: uploadResponse,
     message: '이미지 업로드에 성공했습니다.',

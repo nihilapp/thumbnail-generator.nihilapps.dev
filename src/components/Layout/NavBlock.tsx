@@ -24,11 +24,12 @@ export function NavBlock({ styles, }: Props) {
   useEffect(() => {
     const { data, } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-
         switch (event) {
           case 'INITIAL_SESSION':
           case 'SIGNED_IN': {
-            if (session?.user) {
+            if (session?.user === undefined) {
+              console.log('[세션] 로그아웃 상태.');
+            } else if (session?.user) {
               let userName: string;
 
               if (!session.user.user_metadata.userName) {
@@ -37,37 +38,46 @@ export function NavBlock({ styles, }: Props) {
                 userName = session.user.user_metadata.userName;
               }
 
-              supabase.auth.updateUser({
-                data: {
-                  provider_token: session.provider_token,
-                  provider_refresh_token: session.provider_refresh_token,
-                  exp: Nihil
-                    .date(session.expires_at * 1000)
-                    .format(),
-                  userName,
-                },
-              }).then(({ data: { user, }, }) => {
-                setUser(user);
-
-                const newSession = { ...session, };
-                newSession.user = { ...user, };
-
-                setSession(newSession);
-
-                console.log('user >> ', user);
-                console.log('session >> ', newSession);
-
-                console.log('[세션] 세션 정보 업데이트');
-              });
-            } else {
               setUser(session?.user);
               setSession(session);
               setProvider(session?.user.app_metadata.provider as ProviderType);
 
-              console.log('user >> ', session?.user);
-              console.log('session >> ', session);
-
               console.log('[세션] 로그인');
+
+              if (session.user.app_metadata.provider === 'google') {
+                supabase.auth.updateUser({
+                  data: {
+                    provider_token: session.provider_token,
+                    provider_refresh_token: session.provider_refresh_token,
+                    exp: Nihil.date(session.expires_at * 1000).format(),
+                    userName,
+                  },
+                }).then(({ data: { user, }, }) => {
+                  setUser(user);
+
+                  const newSession = { ...session, };
+                  newSession.user = { ...user, };
+
+                  setSession(newSession);
+
+                  console.log('[세션] 세션 정보 업데이트');
+                });
+              } else {
+                supabase.auth.updateUser({
+                  data: {
+                    userName,
+                  },
+                }).then(({ data: { user, }, }) => {
+                  setUser(user);
+
+                  const newSession = { ...session, };
+                  newSession.user = { ...user, };
+
+                  setSession(newSession);
+
+                  console.log('[세션] 세션 정보 업데이트');
+                });
+              }
             }
             return;
           }
